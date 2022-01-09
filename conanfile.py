@@ -4,7 +4,7 @@ from conans import ConanFile, CMake, tools
 class ChronopticsToF(ConanFile):
     scm = {
         "type": "git",
-        "url": "not_stored_yet.git",
+        "url": "git@github.com:twantonie/match_idle.git",
         "revision": "auto",
     }
 
