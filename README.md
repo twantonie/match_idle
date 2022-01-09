@@ -34,6 +34,7 @@ With these requirements in mind there are only a few options left.
  Which at the moment doesn't support webassembly or Dear Imgui.
 
 Since there are C++ wrappers around SDL I think I might go with that since it's slightly better supported and has multiple backends.
+The best looking C++ wrapper: [centurion](https://github.com/albin-johansson/centurion).
 
 ## Art
 
