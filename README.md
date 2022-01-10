@@ -41,3 +41,14 @@ The best looking C++ wrapper: [centurion](https://github.com/albin-johansson/cen
 We can get free game assets from the following sites:
  - [open game art](https://opengameart.org/)
  - [game icons](https://game-icons.net/tags/catan.html), found icons that could be useful for resource gathering
+
+## TODO
+
+- [ ] Get C++ wrapper working
+- [ ] Load sprites in grid pattern
+- [ ] Make items moveable by one
+- [ ] Recognize match 
+- [ ] Allow matching while grid is still busy refilling and matching
+- [ ] Add bomb when you have a match 4
+- [ ] Add clear color when you have a match 5
+- [ ] Add resource counters
