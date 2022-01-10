@@ -1,35 +1,37 @@
-// SDL2 Hello, World!
-// This should display a white screen for 2 seconds
-// compile with: clang++ main.cpp -o hello_sdl2 -lSDL2
-// run with: ./hello_sdl2
-
-#include <SDL2/SDL.h>
-#include <stdio.h>
-
-#define SCREEN_WIDTH  640
-#define SCREEN_HEIGHT 480
+#include <centurion.hpp>
 
 int main(int, char**) {
-  SDL_Window* window = NULL;
-  SDL_Surface* screenSurface = NULL;
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    fprintf(stderr, "could not initialize sdl2: %s\n", SDL_GetError());
-    return 1;
+  // Initialize the library
+  cen::library centurion;
+
+  // Create a window and an associated renderer
+  auto [window, renderer] = cen::make_window_and_renderer();
+
+  // Make sure our window is visible
+  window.show();
+
+  cen::event event;
+  bool running = true;
+
+  while (running) {
+    while (event.poll()) {
+      // Check if the user wants to quit the application
+      if (event.is<cen::quit_event>()) {
+        running = false;
+        break;
+      }
+    }
+
+    renderer.clear_with(cen::colors::coral);
+
+    // Miscellaneous rendering code goes here...
+
+    renderer.present();
   }
-  window = SDL_CreateWindow("hello_sdl2", SDL_WINDOWPOS_UNDEFINED,
-                            SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-                            SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-  if (window == NULL) {
-    fprintf(stderr, "could not create window: %s\n", SDL_GetError());
-    return 1;
-  }
-  screenSurface = SDL_GetWindowSurface(window);
-  SDL_FillRect(screenSurface, NULL,
-               SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-  SDL_UpdateWindowSurface(window);
-  SDL_Delay(2000);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
+
+  // Make the window invisible again, this might not be necessary, but it
+  // doesn't hurt
+  window.hide();
 
   return 0;
 }

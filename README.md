@@ -44,7 +44,7 @@ We can get free game assets from the following sites:
 
 ## TODO
 
-- [ ] Get C++ wrapper working
+- [x] Get C++ wrapper working
 - [ ] Load sprites in grid pattern
 - [ ] Make items moveable by one
 - [ ] Recognize match 

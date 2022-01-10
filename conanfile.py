@@ -16,7 +16,7 @@ class ChronopticsToF(ConanFile):
     options = {"shared": [True, False], "compile_device": [True, False]}
     default_options = {"shared": False, "compile_device": False}
 
-    requires = ["sdl/2.0.18"]
+    requires = ["centurion/6.3.0"]
 
     generators = "cmake_find_package", "cmake_paths"
 
