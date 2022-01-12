@@ -45,10 +45,14 @@ We can get free game assets from the following sites:
 ## TODO
 
 - [x] Get C++ wrapper working
-- [ ] Load sprites in grid pattern
+- [ ] Render grid
+- [ ] Load sprite
+- [ ] Fill board with items
 - [ ] Make items moveable by one
 - [ ] Recognize match 
 - [ ] Allow matching while grid is still busy refilling and matching
 - [ ] Add bomb when you have a match 4
+- [ ] Add lightning which clears board when you have an L or T match
 - [ ] Add clear color when you have a match 5
+- [ ] Add clear board when you match two clear colors
 - [ ] Add resource counters
