@@ -1,5 +1,9 @@
 #include <centurion.hpp>
 
+#include "match_window.hpp"
+
+using namespace match_idle;
+
 int main(int, char**) {
   // Initialize the library
   cen::library centurion;
@@ -13,6 +17,8 @@ int main(int, char**) {
   cen::event event;
   bool running = true;
 
+  MatchArea match_area({100, 100, 400, 400});
+
   while (running) {
     while (event.poll()) {
       // Check if the user wants to quit the application
@@ -20,11 +26,13 @@ int main(int, char**) {
         running = false;
         break;
       }
+
+      match_area.handle_events(event);
     }
 
-    renderer.clear_with(cen::colors::coral);
+    renderer.clear_with(cen::colors::white);
 
-    // Miscellaneous rendering code goes here...
+    match_area.render(renderer);
 
     renderer.present();
   }

@@ -10,5 +10,8 @@ include(warnings)
 
 find_package(centurion REQUIRED)
 
-add_executable(sdl_test sdltest.cpp)
-target_link_libraries(sdl_test centurion::centurion)
+add_library(lib STATIC src/match_window.cpp)
+target_link_libraries(lib PUBLIC centurion::centurion)
+
+add_executable(match_idle src/main.cpp)
+target_link_libraries(match_idle PRIVATE lib)

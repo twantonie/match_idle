@@ -45,7 +45,7 @@ We can get free game assets from the following sites:
 ## TODO
 
 - [x] Get C++ wrapper working
-- [ ] Render grid
+- [x] Render grid
 - [ ] Load sprite
 - [ ] Fill board with items
 - [ ] Make items moveable by one
