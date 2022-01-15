@@ -7,18 +7,18 @@ namespace match_idle {
 
 class MatchArea {
  public:
-  MatchArea(cen::irect area) { update_area_(area); }
+  MatchArea(cen::irect area) { _update_area(area); }
 
   void handle_events(cen::event &event);
   void render(cen::renderer &renderer) const;
 
-  cen::irect area() const { return area_; }
-  void area(cen::irect area) { update_area_(area); }
+  cen::irect area() const { return _area; }
+  void area(cen::irect area) { _update_area(area); }
 
  private:
-  void update_area_(cen::irect area);
+  void _update_area(cen::irect area);
 
-  cen::irect area_;
+  cen::irect _area;
 
   static constexpr int grid_rows = 8;
   static constexpr int grid_cols = 8;
