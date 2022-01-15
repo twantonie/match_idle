@@ -53,7 +53,7 @@ I probably need to find a better word then gems for my game since I won't be usi
 - [x] Get C++ wrapper working
 - [x] Render grid
 - [ ] Load sprite
-- [ ] Fill board with items
+- [x] Fill board with items
 - [ ] Make items moveable by one
 - [ ] Recognize match 
 - [ ] Allow matching while grid is still busy refilling and matching
