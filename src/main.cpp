@@ -12,12 +12,20 @@ int main(int, char**) {
   auto [window, renderer] = cen::make_window_and_renderer();
 
   // Make sure our window is visible
+  window.set_title("Match Idle");
   window.show();
 
   cen::event event;
   bool running = true;
 
-  MatchArea match_area({100, 100, 400, 400});
+  std::random_device dev;
+  std::mt19937 gen(dev());
+  MatchArea match_area({100, 100, 400, 400}, gen);
+
+  // Doesn't look like I can resize textures/surfaces
+  // constexpr char sheep_loc[] = "C:/Code/match_idle/resources/sheep.svg";
+  // cen::texture sheep(renderer, sheep_loc);
+  //   renderer.render(sheep, cen::ipoint(0, 0));
 
   while (running) {
     while (event.poll()) {

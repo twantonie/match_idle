@@ -2,6 +2,24 @@
 
 namespace match_idle {
 
+static std::vector<Gem> fill_board(std::mt19937 &gen, size_t nr_values) {
+  std::uniform_int_distribution<uint32_t> dist(0, 6);
+
+  std::vector<Gem> board;
+  board.resize(nr_values);
+
+  for (size_t i = 0; i < nr_values; i++) {
+    board[i] = Gem(static_cast<Gem::Type>(dist(gen)));
+  }
+
+  return board;
+}
+
+MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
+  _board = fill_board(_gen, grid_rows * grid_cols);
+  _update_area(area);
+}
+
 void MatchArea::handle_events(cen::event &) {}
 
 void MatchArea::render(cen::renderer &renderer) const {
@@ -20,6 +38,8 @@ void MatchArea::render(cen::renderer &renderer) const {
     renderer.draw_line(cen::ipoint{x, _area.y()},
                        cen::ipoint{x, _area.y() + _area.height()});
   }
+
+  // TODO: Draw gems
 }
 
 void MatchArea::_update_area(cen::irect area) {
