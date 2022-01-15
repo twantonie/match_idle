@@ -42,6 +42,12 @@ We can get free game assets from the following sites:
  - [open game art](https://opengameart.org/)
  - [game icons](https://game-icons.net/tags/catan.html), found icons that could be useful for resource gathering
 
+## Match 3 mechanics
+
+I've been playing bejeweled 3 and slowed it down using cheat engine. I've found that you can match any gems when they're not moving. Falling gems cannot be moved and matches are determined at the start of the move animation, not the end. Also matching just before the rows start falling keeps those two gems in place and holds up any gems above it.
+
+I probably need to find a better word then gems for my game since I won't be using gems. Maybe resources.
+
 ## TODO
 
 - [x] Get C++ wrapper working
