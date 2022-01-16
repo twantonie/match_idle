@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 project(match_idle LANGUAGES C CXX)
 
@@ -7,6 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}/cmake")
 
 include(settings)
 include(warnings)
+include(analyzers)
 
 find_package(centurion REQUIRED)
 
