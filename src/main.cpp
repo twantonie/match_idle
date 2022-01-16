@@ -27,6 +27,11 @@ int main(int, char**) {
   // cen::texture sheep(renderer, sheep_loc);
   //   renderer.render(sheep, cen::ipoint(0, 0));
 
+  auto start_time = cen::counter::ticks();
+
+  constexpr uint32_t fps = 60;
+  constexpr std::chrono::milliseconds time_per_frame{1000 / fps};
+
   while (running) {
     while (event.poll()) {
       // Check if the user wants to quit the application
@@ -43,6 +48,13 @@ int main(int, char**) {
     match_area.render(renderer);
 
     renderer.present();
+
+    const auto curr_time = cen::counter::ticks();
+    const auto delta = curr_time - start_time;
+    if (delta < time_per_frame) {
+      cen::thread::sleep(time_per_frame - delta);
+    }
+    start_time = curr_time;
   }
 
   // Make the window invisible again, this might not be necessary, but it
