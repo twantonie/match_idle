@@ -49,6 +49,9 @@ class MatchArea {
   std::mt19937 _gen;
   std::vector<Gem> _board;
 
+  int _selected_index{-1};
+  cen::ipoint _mouse_loc{0, 0};
+
   static constexpr uint32_t grid_rows = 8;
   static constexpr uint32_t grid_cols = 8;
 };
