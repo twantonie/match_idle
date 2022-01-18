@@ -32,6 +32,8 @@ struct Gem {
   Special special{Special::None};
 };
 
+enum class MoveDir { None, Up, Down, Left, Right };
+
 class MatchArea {
  public:
   MatchArea(cen::irect area, std::mt19937 gen);
@@ -50,7 +52,8 @@ class MatchArea {
   std::vector<Gem> _board;
 
   int _selected_index{-1};
-  cen::ipoint _mouse_loc{0, 0};
+  cen::ipoint _mouse_pressed_loc{0, 0};
+  MoveDir _move_dir{MoveDir::None};
 
   static constexpr uint32_t grid_rows = 8;
   static constexpr uint32_t grid_cols = 8;

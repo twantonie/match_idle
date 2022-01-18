@@ -23,7 +23,6 @@ MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
 void MatchArea::handle_events(cen::event &event) {
   if (event.is<cen::mouse_button_event>()) {
     const auto &ev = event.get<cen::mouse_button_event>();
-    _mouse_loc = cen::ipoint(ev.x(), ev.y());
 
     // Check if event is within our area
     if (ev.x() < _area.x() || ev.x() >= _area.x() + _area.width() ||
@@ -36,6 +35,25 @@ void MatchArea::handle_events(cen::event &event) {
     size_t row_index = (ev.y() - _area.y()) * grid_rows / _area.height();
 
     _selected_index = col_index + row_index * grid_cols;
+
+    if (ev.released()) {
+      const auto x_diff = ev.x() - _mouse_pressed_loc.x();
+      const auto y_diff = ev.y() - _mouse_pressed_loc.y();
+      constexpr auto min_delta = 15;
+
+      if (std::sqrt(x_diff * x_diff + y_diff * y_diff) > min_delta) {
+        if (std::abs(x_diff) > std::abs(y_diff)) {
+          _move_dir = (x_diff > 0 ? MoveDir::Right : MoveDir::Left);
+        } else {
+          _move_dir = (y_diff > 0 ? MoveDir::Down : MoveDir::Up);
+        }
+      }
+
+      // XXX: Update board if move direction is valid for pressed gem
+    } else if (ev.pressed()) {
+      _mouse_pressed_loc = cen::ipoint(ev.x(), ev.y());
+      _move_dir = MoveDir::None;
+    }
   }
 }
 
@@ -63,6 +81,31 @@ static void set_color(Gem::Type type, cen::renderer &renderer) {
       renderer.set_color(cen::colors::white);
       break;
   }
+}
+
+static void draw_line_in_move_dir(cen::renderer &renderer, MoveDir dir,
+                                  const cen::ipoint &point) {
+  constexpr auto length = 10;
+
+  if (dir == MoveDir::None) return;
+
+  cen::ipoint to = point;
+  switch (dir) {
+    case MoveDir::Left:
+      to.set_x(to.x() - length);
+      break;
+    case MoveDir::Right:
+      to.set_x(to.x() + length);
+      break;
+    case MoveDir::Up:
+      to.set_y(to.y() - length);
+      break;
+    case MoveDir::Down:
+      to.set_y(to.y() + length);
+      break;
+  }
+
+  renderer.draw_line(point, to);
 }
 
 void MatchArea::render(cen::renderer &renderer) const {
@@ -115,7 +158,9 @@ void MatchArea::render(cen::renderer &renderer) const {
 
   // Draw circle around mouse location
   renderer.set_color(cen::colors::red);
-  renderer.draw_circle(_mouse_loc, 10.f);
+  renderer.draw_circle(_mouse_pressed_loc, 10.f);
+
+  draw_line_in_move_dir(renderer, _move_dir, _mouse_pressed_loc);
 }
 
 void MatchArea::_update_area(cen::irect area) {
