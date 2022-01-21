@@ -32,7 +32,20 @@ struct Gem {
   Special special{Special::None};
 };
 
+struct GridLayout {
+  uint32_t rows = 8;
+  uint32_t cols = 8;
+};
+
 enum class MoveDir { None, Up, Down, Left, Right };
+
+struct Match {
+  std::vector<size_t> indices;
+  Gem::Special special{Gem::Special::None};
+};
+
+std::vector<Match> find_matches(const std::vector<Gem> &board,
+                                const GridLayout &grid);
 
 class MatchArea {
  public:
@@ -55,8 +68,7 @@ class MatchArea {
   cen::ipoint _mouse_pressed_loc{0, 0};
   MoveDir _move_dir{MoveDir::None};
 
-  static constexpr uint32_t grid_rows = 8;
-  static constexpr uint32_t grid_cols = 8;
+  static constexpr GridLayout grid{8, 8};
 };
 
 }  // namespace match_idle

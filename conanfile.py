@@ -24,8 +24,11 @@ class ChronopticsToF(ConanFile):
         git = tools.Git(folder=self.recipe_folder)
         self.version = git.get_commit()[0:8]
 
+    def build_requirements(self):
+        self.build_requires("catch2/2.13.8", force_host_context=True)
+
     def configure(self):
-        pass
+        self.options["catch2"].with_main = True
 
     def build(self):
         cmake = CMake(self)
