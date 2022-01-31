@@ -13,10 +13,12 @@ TEST_CASE("find matches") {
 
     auto matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
+    CHECK(matches[0].indices.size() == 3);
 
     grid = {1, 3};
     matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
+    CHECK(matches[0].indices.size() == 3);
   }
 
   SECTION("4 of a kind") {
@@ -28,11 +30,13 @@ TEST_CASE("find matches") {
     auto matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::Explosive);
+    CHECK(matches[0].indices.size() == 4);
 
     grid = {1, 4};
     matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::Explosive);
+    CHECK(matches[0].indices.size() == 4);
   }
 
   SECTION("L/T") {
@@ -45,9 +49,8 @@ TEST_CASE("find matches") {
     auto matches = mi::find_matches(board, grid);
 
     CHECK(matches.size() == 1);
-    // XXX: What do we do here? Bejeweled returns both an explosive and
-    // lightning gem
     CHECK(matches[0].special == mi::Gem::Special::Lightning);
+    CHECK(matches[0].indices.size() == 5);
 
     board = {{Type::Blue},  {Type::Blue}, {Type::Blue},
              {Type::Green}, {Type::Blue}, {Type::Green},
@@ -57,20 +60,25 @@ TEST_CASE("find matches") {
 
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::Lightning);
+    CHECK(matches[0].indices.size() == 5);
   }
 
   SECTION("L/T + 4") {
-    std::vector<mi::Gem> board{{Type::Blue},  {Type::Blue},  {Type::Blue},
-                               {Type::Blue},  {Type::Blue},  {Type::Green},
-                               {Type::Green}, {Type::White}, {Type::Blue},
-                               {Type::White}, {Type::White}, {Type::White}};
+    // clang-format off
+    std::vector<mi::Gem> board{{Type::Blue}, {Type::Blue},  {Type::Blue},  {Type::Blue},  
+                               {Type::Blue}, {Type::Green}, {Type::Green}, {Type::White}, 
+                               {Type::Blue}, {Type::White}, {Type::White}, {Type::Green}};
+    // clang-format on
 
-    mi::GridLayout grid{4, 3};
+    mi::GridLayout grid{3, 4};
 
     auto matches = mi::find_matches(board, grid);
+    // XXX: What do we do here? Bejeweled returns both an explosive and
+    // lightning gem
 
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::Lightning);
+    CHECK(matches[0].indices.size() == 6);
   }
 
   SECTION("5 of a kind") {
@@ -82,11 +90,13 @@ TEST_CASE("find matches") {
     auto matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::HyperCube);
+    CHECK(matches[0].indices.size() == 5);
 
     grid = {1, 5};
     matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::HyperCube);
+    CHECK(matches[0].indices.size() == 5);
   }
 
   SECTION("6 of a kind") {
@@ -98,10 +108,12 @@ TEST_CASE("find matches") {
     auto matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::HyperCube);
+    CHECK(matches[0].indices.size() == 6);
 
     grid = {1, 6};
     matches = mi::find_matches(board, grid);
     CHECK(matches.size() == 1);
     CHECK(matches[0].special == mi::Gem::Special::HyperCube);
+    CHECK(matches[0].indices.size() == 6);
   }
 }

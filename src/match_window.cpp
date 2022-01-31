@@ -18,8 +18,12 @@ static std::vector<Gem> fill_board(std::mt19937 &gen, size_t nr_values) {
 // Calculates matches and returns them as a vector of matches, and each match is
 // a number of indices
 
-static Match calculate_match(std::vector<size_t> &indices) {
-  Match match;
+static void calculate_match(std::vector<size_t> &indices,
+                            std::vector<Match> &matches) {
+  if (indices.size() < 3) return;
+
+  matches.push_back({});
+  Match &match = matches.back();
 
   if (indices.size() == 6) {
     // TODO: Super special
@@ -31,8 +35,51 @@ static Match calculate_match(std::vector<size_t> &indices) {
   }
 
   match.indices = std::move(indices);
+}
 
-  return match;
+bool horizontal(const Match &match) {
+  return match.indices[0] + 1 == match.indices[1];
+}
+
+static void erase_duplicate_indices(std::vector<size_t> &indices) {
+  std::sort(indices.begin(), indices.end());
+  auto it = std::unique(indices.begin(), indices.end());
+  indices.erase(it, indices.end());
+}
+
+void filter_matches(std::vector<Match> &matches) {
+  for (auto it = matches.begin(); it != matches.end(); it++) {
+    auto start = it + 1;
+
+    while (start != matches.end()) {
+      auto res = std::find_if(start, matches.end(), [&it](const Match &match) {
+        for (auto i : it->indices) {
+          auto i_res = std::find(match.indices.begin(), match.indices.end(), i);
+
+          if (i_res != match.indices.end()) return true;
+        }
+
+        return false;
+      });
+
+      if (res == matches.end()) break;
+
+      // XXX: We need to take into account more special cases
+      if (horizontal(*it) != horizontal(*res)) {
+        it->special = Gem::Special::Lightning;
+      }
+
+      // Add indices of matching matches together
+      it->indices.insert(it->indices.end(), res->indices.begin(),
+                         res->indices.end());
+
+      start = matches.erase(res);
+    }
+  }
+
+  for (auto &match : matches) {
+    erase_duplicate_indices(match.indices);
+  }
 }
 
 std::vector<Match> find_matches(const std::vector<Gem> &board,
@@ -50,6 +97,8 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
       horizontal_match.push_back(x);
     }
 
+    calculate_match(horizontal_match, matches);
+
     std::vector<size_t> vertical_match{i};
     for (size_t y = i + grid.cols; y < grid.cols * grid.rows; y += grid.cols) {
       if (board[y].type != gem.type) break;
@@ -57,19 +106,10 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
       vertical_match.push_back(y);
     }
 
-    Match match;
-    if (horizontal_match.size() > 2) {
-      match = calculate_match(horizontal_match);
-    } else if (vertical_match.size() > 2) {
-      match = calculate_match(vertical_match);
-    }
-
-    if (!match.indices.empty()) {
-      matches.push_back(std::move(match));
-    }
+    calculate_match(vertical_match, matches);
   }
 
-  // TODO: Filter matches
+  filter_matches(matches);
 
   return matches;
 }
