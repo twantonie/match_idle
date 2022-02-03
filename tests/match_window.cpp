@@ -117,3 +117,71 @@ TEST_CASE("find matches") {
     CHECK(matches[0].indices.size() == 6);
   }
 }
+
+TEST_CASE("Remove matches") {
+  using Type = mi::Gem::Type;
+
+  SECTION("Drop") {
+    std::vector<mi::Gem> board{
+        {Type::Blue}, {Type::Blue}, {Type::Green}, {Type::Yellow}};
+
+    mi::GridLayout grid{2, 2};
+
+    std::vector<mi::Match> matches{mi::Match{{2, 3}}};
+
+    std::vector<mi::Gem> expected_board{
+        {Type::Empty}, {Type::Empty}, {Type::Blue}, {Type::Blue}};
+
+    mi::remove_matches(board, grid, matches);
+
+    CHECK(board == expected_board);
+  }
+
+  SECTION("No drop") {
+    std::vector<mi::Gem> board{
+        {Type::Blue}, {Type::Blue}, {Type::Green}, {Type::Yellow}};
+
+    mi::GridLayout grid{2, 2};
+
+    std::vector<mi::Match> matches{mi::Match{{0, 1}}};
+
+    std::vector<mi::Gem> expected_board{
+        {Type::Empty}, {Type::Empty}, {Type::Green}, {Type::Yellow}};
+
+    mi::remove_matches(board, grid, matches);
+
+    CHECK(board == expected_board);
+  }
+
+  SECTION("Vertical match") {
+    std::vector<mi::Gem> board{
+        {Type::Blue}, {Type::Blue}, {Type::Green}, {Type::Yellow}};
+
+    mi::GridLayout grid{2, 2};
+
+    std::vector<mi::Match> matches{mi::Match{{0, 2}}};
+
+    std::vector<mi::Gem> expected_board{
+        {Type::Empty}, {Type::Blue}, {Type::Empty}, {Type::Yellow}};
+
+    mi::remove_matches(board, grid, matches);
+
+    CHECK(board == expected_board);
+  }
+
+  SECTION("Multiple drops") {
+    std::vector<mi::Gem> board{
+        {Type::White}, {Type::Blue}, {Type::Green}, {Type::Yellow}};
+
+    mi::GridLayout grid{4, 1};
+
+    std::vector<mi::Match> matches{mi::Match{{1}}, mi::Match{{3}}};
+
+    std::vector<mi::Gem> expected_board{
+        {Type::Empty}, {Type::Empty}, {Type::White}, {Type::Green}};
+
+    mi::remove_matches(board, grid, matches);
+
+    CHECK(board == expected_board);
+  }
+}

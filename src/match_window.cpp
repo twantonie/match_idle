@@ -2,14 +2,14 @@
 
 namespace match_idle {
 
-static std::vector<Gem> fill_board(std::mt19937 &gen, size_t nr_values) {
-  std::uniform_int_distribution<uint32_t> dist(0, 6);
+const std::uniform_int_distribution<uint32_t> Gem::dist{0, 6};
 
+static std::vector<Gem> fill_board(std::mt19937 &gen, size_t nr_values) {
   std::vector<Gem> board;
   board.resize(nr_values);
 
   for (size_t i = 0; i < nr_values; i++) {
-    board[i] = Gem(static_cast<Gem::Type>(dist(gen)));
+    board[i] = Gem(gen);
   }
 
   return board;
@@ -114,8 +114,61 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
   return matches;
 }
 
+static void drop_gems(std::vector<Gem> &board, const GridLayout &grid) {
+  // Check column by column, start from bottom
+  for (size_t c = 0; c < grid.cols; c++) {
+    int empty_row = -1;
+    for (int r = grid.rows - 1; r > -1; r--) {
+      auto &gem = board[r * grid.cols + c];
+
+      if (gem.type == Gem::Type::Empty) {
+        if (empty_row == -1) empty_row = r;
+        continue;
+      }
+
+      if (empty_row != -1) {
+        std::swap(board[empty_row * grid.cols + c], gem);
+        empty_row--;
+      }
+    }
+  }
+}
+
+void remove_matches(std::vector<Gem> &board, const GridLayout &grid,
+                    const std::vector<Match> &matches) {
+  for (auto &match : matches) {
+    for (auto indice : match.indices) {
+      board[indice].type = Gem::Type::Empty;
+    }
+
+    // TODO: Apply special of gems if any
+
+    // TODO: Need to insert special gems, closest to where the match was made.
+    // But in some instances you don't want this to happen, for instance at
+    // startup
+  }
+
+  drop_gems(board, grid);
+}
+
+static void fill_empty_gems(std::vector<Gem> &board, std::mt19937 &gen) {
+  for (auto &gem : board) {
+    if (gem.type != Gem::Type::Empty) continue;
+
+    gem = Gem(gen);
+  }
+}
+
 MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
   _board = fill_board(_gen, grid.rows * grid.cols);
+
+  std::vector<Match> matches;
+
+  do {
+    matches = find_matches(_board, grid);
+    remove_matches(_board, grid, matches);
+    fill_empty_gems(_board, _gen);
+  } while (!matches.empty());
 
   _update_area(area);
 }
