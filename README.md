@@ -54,8 +54,11 @@ I probably need to find a better word then gems for my game since I won't be usi
 - [x] Render grid
 - [ ] Load sprite
 - [x] Fill board with items
-- [ ] Make items moveable by one
-- [ ] Recognize match 
+- [x] Make items moveable by one
+- [x] Recognize match 
+- [ ] Add animation for swapping gems
+- [ ] Add animation for dropping gems
+- [ ] Recognize game over, no more possible combinations
 - [ ] Allow matching while grid is still busy refilling and matching
 - [ ] Add bomb when you have a match 4
 - [ ] Add lightning which clears board when you have an L or T match

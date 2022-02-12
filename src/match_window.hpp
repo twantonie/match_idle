@@ -79,7 +79,7 @@ class MatchArea {
   std::mt19937 _gen;
   std::vector<Gem> _board;
 
-  int _selected_index{-1};
+  cen::ipoint _selected_gem{-1, -1};
   cen::ipoint _mouse_pressed_loc{0, 0};
   MoveDir _move_dir{MoveDir::None};
 
