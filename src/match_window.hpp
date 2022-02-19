@@ -53,6 +53,7 @@ enum class MoveDir { None, Up, Down, Left, Right };
 
 struct Match {
   std::vector<size_t> indices;
+  Gem::Type type;
   Gem::Special special{Gem::Special::None};
 };
 
@@ -61,6 +62,15 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
 
 void remove_matches(std::vector<Gem> &board, const GridLayout &grid,
                     const std::vector<Match> &matches);
+
+struct PossibleMatch {
+  cen::ipoint pos;
+  MoveDir move_dir;
+  std::vector<Match> matches;
+};
+
+std::vector<PossibleMatch> find_possible_matches(const std::vector<Gem> &board,
+                                                 const GridLayout &grid);
 
 class MatchArea {
  public:

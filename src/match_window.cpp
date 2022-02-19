@@ -19,11 +19,12 @@ static std::vector<Gem> fill_board(std::mt19937 &gen, size_t nr_values) {
 // a number of indices
 
 static void calculate_match(std::vector<size_t> &indices,
-                            std::vector<Match> &matches) {
+                            std::vector<Match> &matches, Gem::Type type) {
   if (indices.size() < 3) return;
 
   matches.push_back({});
   Match &match = matches.back();
+  match.type = type;
 
   if (indices.size() == 6) {
     // TODO: Super special
@@ -88,6 +89,7 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
 
   for (size_t i = 0; i < board.size(); i++) {
     const auto &gem = board[i];
+    if (gem.type == Gem::Type::Empty) continue;
 
     std::vector<size_t> horizontal_match{i};
     const size_t x_max = grid.cols * ((i + grid.cols) / grid.cols);
@@ -97,7 +99,7 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
       horizontal_match.push_back(x);
     }
 
-    calculate_match(horizontal_match, matches);
+    calculate_match(horizontal_match, matches, gem.type);
 
     std::vector<size_t> vertical_match{i};
     for (size_t y = i + grid.cols; y < grid.cols * grid.rows; y += grid.cols) {
@@ -106,7 +108,7 @@ std::vector<Match> find_matches(const std::vector<Gem> &board,
       vertical_match.push_back(y);
     }
 
-    calculate_match(vertical_match, matches);
+    calculate_match(vertical_match, matches, gem.type);
   }
 
   filter_matches(matches);
@@ -151,32 +153,6 @@ void remove_matches(std::vector<Gem> &board, const GridLayout &grid,
   drop_gems(board, grid);
 }
 
-static void fill_empty_gems(std::vector<Gem> &board, std::mt19937 &gen) {
-  for (auto &gem : board) {
-    if (gem.type != Gem::Type::Empty) continue;
-
-    gem = Gem(gen);
-  }
-}
-
-static void update_board(GridLayout const &grid, std::vector<Gem> &board,
-                         std::mt19937 &gen) {
-  std::vector<Match> matches;
-
-  do {
-    matches = find_matches(board, grid);
-    remove_matches(board, grid, matches);
-    fill_empty_gems(board, gen);
-  } while (!matches.empty());
-}
-
-MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
-  _board = fill_board(_gen, grid.rows * grid.cols);
-
-  update_board(grid, _board, _gen);
-  _update_area(area);
-}
-
 static bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
                                     cen::ipoint pos) {
   if (move_dir == MoveDir::None) return false;
@@ -202,6 +178,86 @@ static void swap_gems(MoveDir move_dir, const GridLayout &grid, cen::ipoint pos,
   }
 
   std::swap(board[index], board[other_index]);
+}
+
+PossibleMatch find_possible_match(std::vector<Gem> &board,
+                                  const GridLayout &grid, cen::ipoint pos,
+                                  MoveDir move_dir) {
+  PossibleMatch possible_match{pos, move_dir};
+
+  if (!is_move_direction_valid(move_dir, grid, pos)) return possible_match;
+
+  swap_gems(move_dir, grid, pos, board);
+
+  std::vector<Match> matches = find_matches(board, grid);
+  if (matches.empty()) {
+    // Move gems back into normal position
+    swap_gems(move_dir, grid, pos, board);
+  }
+
+  while (!matches.empty()) {
+    remove_matches(board, grid, matches);
+
+    possible_match.matches.insert(possible_match.matches.begin(),
+                                  matches.begin(), matches.end());
+
+    matches = find_matches(board, grid);
+  }
+
+  return possible_match;
+}
+
+std::vector<PossibleMatch> find_possible_matches(const std::vector<Gem> &board,
+                                                 const GridLayout &grid) {
+  std::vector<PossibleMatch> possible_matches;
+
+  std::vector<Gem> board_copy = board;
+
+  const auto add_match = [&](PossibleMatch match) {
+    if (!match.matches.empty()) {
+      possible_matches.push_back(match);
+
+      // Reset board when we found a match because we'll have messed with it
+      board_copy = board;
+    }
+  };
+
+  for (int r = 0; r < static_cast<int>(grid.rows); r++) {
+    for (int c = 0; c < static_cast<int>(grid.cols); c++) {
+      add_match(find_possible_match(board_copy, grid, cen::ipoint{c, r},
+                                    MoveDir::Right));
+      add_match(find_possible_match(board_copy, grid, cen::ipoint{c, r},
+                                    MoveDir::Down));
+    }
+  }
+
+  return possible_matches;
+}
+
+static void fill_empty_gems(std::vector<Gem> &board, std::mt19937 &gen) {
+  for (auto &gem : board) {
+    if (gem.type != Gem::Type::Empty) continue;
+
+    gem = Gem(gen);
+  }
+}
+
+static void update_board(GridLayout const &grid, std::vector<Gem> &board,
+                         std::mt19937 &gen) {
+  std::vector<Match> matches;
+
+  do {
+    matches = find_matches(board, grid);
+    remove_matches(board, grid, matches);
+    fill_empty_gems(board, gen);
+  } while (!matches.empty());
+}
+
+MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
+  _board = fill_board(_gen, grid.rows * grid.cols);
+
+  update_board(grid, _board, _gen);
+  _update_area(area);
 }
 
 void MatchArea::handle_events(cen::event &event) {

@@ -185,3 +185,25 @@ TEST_CASE("Remove matches") {
     CHECK(board == expected_board);
   }
 }
+
+TEST_CASE("Possible matches") {
+  using Type = mi::Gem::Type;
+
+  std::vector<mi::Gem> board{{Type::Green},  {Type::Blue},   {Type::Blue},
+                             {Type::Blue},   {Type::Green},  {Type::Yellow},
+                             {Type::Yellow}, {Type::Yellow}, {Type::Green}};
+
+  mi::GridLayout grid{3, 3};
+
+  auto possible_matches = mi::find_possible_matches(board, grid);
+
+  CHECK(possible_matches.size() == 2);
+
+  CHECK(possible_matches[0].pos == cen::ipoint{0, 0});
+  CHECK(possible_matches[0].move_dir == mi::MoveDir::Down);
+  CHECK(possible_matches[0].matches[0].type == Type::Blue);
+
+  CHECK(possible_matches[1].pos == cen::ipoint{2, 1});
+  CHECK(possible_matches[1].move_dir == mi::MoveDir::Down);
+  CHECK(possible_matches[1].matches[0].type == Type::Yellow);
+}
