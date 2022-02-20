@@ -2,6 +2,8 @@
 #include <emscripten.h>
 #endif
 
+#include <fmt/core.h>
+
 #include <centurion.hpp>
 
 #include "match_window.hpp"

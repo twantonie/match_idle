@@ -12,9 +12,10 @@ include(warnings)
 include(analyzers)
 
 find_package(centurion REQUIRED)
+find_package(spdlog REQUIRED)
 
 add_library(lib STATIC src/match_window.cpp)
-target_link_libraries(lib PUBLIC centurion::centurion)
+target_link_libraries(lib PUBLIC centurion::centurion fmt::fmt)
 target_include_directories(lib PUBLIC src)
 
 add_executable(match_idle src/main.cpp)
