@@ -20,6 +20,8 @@ target_include_directories(lib PUBLIC src)
 add_executable(match_idle src/main.cpp)
 target_link_libraries(match_idle PRIVATE lib)
 
+configure_file(src/index.html "${CMAKE_BINARY_DIR}/bin/index.html" COPYONLY)
+
 if(COMPILE_TESTS)
   enable_testing()
   add_subdirectory(tests)

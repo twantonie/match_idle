@@ -18,7 +18,7 @@ class ChronopticsToF(ConanFile):
 
     requires = ["centurion/6.3.0"]
 
-    generators = "cmake_find_package", "cmake_paths"
+    generators = "cmake_find_package", "cmake_paths", "virtualenv"
 
     def set_version(self):
         git = tools.Git(folder=self.recipe_folder)

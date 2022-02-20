@@ -2,7 +2,7 @@
 
 namespace match_idle {
 
-const std::uniform_int_distribution<uint32_t> Gem::dist{0, 6};
+std::uniform_int_distribution<uint32_t> Gem::dist{0, 6};
 
 static std::vector<Gem> fill_board(std::mt19937 &gen, size_t nr_values) {
   std::vector<Gem> board;
@@ -156,9 +156,11 @@ void remove_matches(std::vector<Gem> &board, const GridLayout &grid,
 static bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
                                     cen::ipoint pos) {
   if (move_dir == MoveDir::None) return false;
-  if (move_dir == MoveDir::Right && pos.x() == grid.cols - 1) return false;
+  if (move_dir == MoveDir::Right && pos.x() == static_cast<int>(grid.cols) - 1)
+    return false;
   if (move_dir == MoveDir::Left && pos.x() == 0) return false;
-  if (move_dir == MoveDir::Down && pos.y() == grid.rows - 1) return false;
+  if (move_dir == MoveDir::Down && pos.y() == static_cast<int>(grid.rows) - 1)
+    return false;
   if (move_dir == MoveDir::Up && pos.y() == 0) return false;
 
   return true;
@@ -183,7 +185,9 @@ static void swap_gems(MoveDir move_dir, const GridLayout &grid, cen::ipoint pos,
 PossibleMatch find_possible_match(std::vector<Gem> &board,
                                   const GridLayout &grid, cen::ipoint pos,
                                   MoveDir move_dir) {
-  PossibleMatch possible_match{pos, move_dir};
+  PossibleMatch possible_match;
+  possible_match.pos = pos;
+  possible_match.move_dir = move_dir;
 
   if (!is_move_direction_valid(move_dir, grid, pos)) return possible_match;
 
@@ -335,6 +339,8 @@ static void set_color(Gem::Type type, cen::renderer &renderer) {
     case Gem::Type::White:
       renderer.set_color(cen::colors::white);
       break;
+    case Gem::Type::Empty:
+      break;
   }
 }
 
@@ -357,6 +363,8 @@ static void draw_line_in_move_dir(cen::renderer &renderer, MoveDir dir,
       break;
     case MoveDir::Down:
       to.set_y(to.y() + length);
+      break;
+    default:
       break;
   }
 

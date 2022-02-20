@@ -13,7 +13,7 @@ namespace match_idle {
 
 // XXX: Might want to give this a different name
 struct Gem {
-  static const std::uniform_int_distribution<uint32_t> dist;
+  static std::uniform_int_distribution<uint32_t> dist;
 
   enum class Type : uint32_t {
     Red,
@@ -52,8 +52,11 @@ struct GridLayout {
 enum class MoveDir { None, Up, Down, Left, Right };
 
 struct Match {
+  Match() = default;
+  Match(std::vector<size_t> _indices) : indices(_indices) {}
+
   std::vector<size_t> indices;
-  Gem::Type type;
+  Gem::Type type{Gem::Type::Empty};
   Gem::Special special{Gem::Special::None};
 };
 
