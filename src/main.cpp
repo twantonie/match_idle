@@ -43,6 +43,8 @@ int main(int, char**) {
       match_area.handle_events(event);
     }
 
+    if (match_area.game_over()) return -1;
+
     renderer.clear_with(cen::colors::white);
 
     match_area.render(renderer);

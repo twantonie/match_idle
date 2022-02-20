@@ -56,6 +56,7 @@ I probably need to find a better word then gems for my game since I won't be usi
 - [x] Fill board with items
 - [x] Make items moveable by one
 - [x] Recognize match 
+- [ ] Add main menu
 - [ ] Add animation for swapping gems
 - [ ] Add animation for dropping gems
 - [ ] Recognize game over, no more possible combinations

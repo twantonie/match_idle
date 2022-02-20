@@ -257,6 +257,7 @@ MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
   _board = fill_board(_gen, grid.rows * grid.cols);
 
   update_board(grid, _board, _gen);
+  _possible_matches = find_possible_matches(_board, grid);
   _update_area(area);
 }
 
@@ -286,6 +287,7 @@ void MatchArea::handle_events(cen::event &event) {
         if (!matches.empty()) {
           _board = board_copy;
           update_board(grid, _board, _gen);
+          _possible_matches = find_possible_matches(_board, grid);
         }
       }
 
