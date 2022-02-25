@@ -344,33 +344,6 @@ static void set_color(Gem::Type type, cen::renderer &renderer) {
   }
 }
 
-static void draw_line_in_move_dir(cen::renderer &renderer, MoveDir dir,
-                                  const cen::ipoint &point) {
-  constexpr auto length = 10;
-
-  if (dir == MoveDir::None) return;
-
-  cen::ipoint to = point;
-  switch (dir) {
-    case MoveDir::Left:
-      to.set_x(to.x() - length);
-      break;
-    case MoveDir::Right:
-      to.set_x(to.x() + length);
-      break;
-    case MoveDir::Up:
-      to.set_y(to.y() - length);
-      break;
-    case MoveDir::Down:
-      to.set_y(to.y() + length);
-      break;
-    default:
-      break;
-  }
-
-  renderer.draw_line(point, to);
-}
-
 void MatchArea::render(cen::renderer &renderer) const {
   auto matches = find_matches(_board, grid);
 
@@ -417,12 +390,6 @@ void MatchArea::render(cen::renderer &renderer) const {
       renderer.draw_rect(cen::irect(x, y, width, height));
     }
   }
-
-  // Draw circle around mouse location
-  renderer.set_color(cen::colors::red);
-  renderer.draw_circle(_mouse_pressed_loc, 10.f);
-
-  draw_line_in_move_dir(renderer, _move_dir, _mouse_pressed_loc);
 }
 
 void MatchArea::_update_area(cen::irect area) {
