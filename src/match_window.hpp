@@ -77,6 +77,7 @@ std::vector<PossibleMatch> find_possible_matches(const std::vector<Gem> &board,
 
 class MatchArea {
  public:
+  MatchArea() = default;
   MatchArea(cen::irect area, std::mt19937 gen);
 
   void handle_events(cen::event &event);

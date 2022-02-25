@@ -10,33 +10,68 @@
 
 using namespace match_idle;
 
+enum class State { MainMenu, Game };
+
 struct GameData {
   cen::window window{"Centurion window", cen::window::default_size(),
                      cen::window::default_flags()};
   cen::renderer renderer{window};
-  cen::event event;
 
   std::mt19937 gen{std::random_device{}()};
   MatchArea match_area{{100, 100, 400, 400}, gen};
 
+  State state{State::MainMenu};
+
   bool running{true};
 };
 
-void loop(void *in_data) {
-  auto data = static_cast<GameData *>(in_data);
-
-  while (data->event.poll()) {
+void handle_main_menu(GameData *data) {
+  cen::event event;
+  while (event.poll()) {
     // Check if the user wants to quit the application
-    if (data->event.is<cen::quit_event>()) {
+    if (event.is<cen::quit_event>()) {
       data->running = false;
       break;
     }
 
-    data->match_area.handle_events(data->event);
+    // Check for key press
+    if (event.is<cen::keyboard_event>() ||
+        event.is<cen::mouse_button_event>()) {
+      data->match_area =
+          MatchArea{{100, 100, 400, 400}, std::mt19937{std::random_device{}()}};
+      data->state = State::Game;
+    }
+  }
+
+  data->renderer.clear_with(cen::colors::black);
+
+  cen::font font{"C:/Code/match_idle/resources/daniel.ttf", 36};
+
+  data->renderer.set_color(cen::colors::white);
+  auto title = data->renderer.render_solid_utf8("Main menu", font);
+
+  data->renderer.render(title, cen::ipoint{0, 0});
+
+  auto press = data->renderer.render_solid_utf8("press any key to start", font);
+  data->renderer.render(press, cen::ipoint{0, title.size().height + 10});
+
+  data->renderer.present();
+}
+
+void handle_match(GameData *data) {
+  cen::event event;
+  while (event.poll()) {
+    // Check if the user wants to quit the application
+    if (event.is<cen::quit_event>()) {
+      data->running = false;
+      break;
+    }
+
+    data->match_area.handle_events(event);
   }
 
   if (data->match_area.game_over()) {
-    data->running = false;
+    data->state = State::MainMenu;
   }
 
   data->renderer.clear_with(cen::colors::white);
@@ -44,6 +79,19 @@ void loop(void *in_data) {
   data->match_area.render(data->renderer);
 
   data->renderer.present();
+}
+
+void loop(void *in_data) {
+  auto data = static_cast<GameData *>(in_data);
+
+  switch (data->state) {
+    case State::MainMenu:
+      handle_main_menu(data);
+      break;
+    case State::Game:
+      handle_match(data);
+      break;
+  }
 }
 
 int main(int, char **) {
