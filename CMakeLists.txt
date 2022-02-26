@@ -36,6 +36,8 @@ target_link_libraries(match_idle PRIVATE lib)
 configure_file(resources/index.html "${CMAKE_BINARY_DIR}/bin/index.html"
                COPYONLY)
 
+add_subdirectory(tools)
+
 if(COMPILE_TESTS)
   enable_testing()
   add_subdirectory(tests)
