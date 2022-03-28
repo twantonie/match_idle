@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 project(match_idle LANGUAGES C CXX)
 
@@ -13,9 +13,20 @@ include(analyzers)
 
 find_package(centurion REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(PhysFS REQUIRED)
+find_package(Boost REQUIRED)
 
-add_library(lib STATIC src/match_window.cpp)
-target_link_libraries(lib PUBLIC centurion::centurion fmt::fmt)
+file(GLOB ZIP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/assets/*")
+add_custom_command(
+  OUTPUT "${CMAKE_BINARY_DIR}/bin/assets.zip"
+  COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/bin/assets.zip"
+          --format=zip "${CMAKE_SOURCE_DIR}/assets"
+  DEPENDS ${ZIP_FILES}
+  VERBATIM USES_TERMINAL)
+
+add_library(lib STATIC src/match_window.cpp src/assets.cpp)
+target_link_libraries(lib PUBLIC centurion::centurion fmt::fmt physfs::physfs
+                                 Boost::Boost)
 target_include_directories(lib PUBLIC src)
 
 add_executable(match_idle src/main.cpp)

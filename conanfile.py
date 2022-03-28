@@ -8,15 +8,12 @@ class ChronopticsToF(ConanFile):
         "revision": "auto",
     }
 
-    name = "tof_internal"
-    license = "Private"
-    url = "https://www.chronoptics.com"
-    description = "The Chronoptics time of flight library"
+    name = "match_idle"
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False], "compile_device": [True, False]}
     default_options = {"shared": False, "compile_device": False}
 
-    requires = ["centurion/6.3.0", "spdlog/1.9.2"]
+    requires = ["centurion/6.3.0", "spdlog/1.9.2", "physfs/3.0.2", "boost/1.78.0"]
 
     generators = "cmake_find_package", "cmake_paths", "virtualenv"
 

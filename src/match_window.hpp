@@ -1,5 +1,5 @@
-#ifndef _MATCH_IDLE_MATCH_WINDOW_HPP_
-#define _MATCH_IDLE_MATCH_WINDOW_HPP_
+#ifndef MATCH_IDLE_MATCH_WINDOW_HPP
+#define MATCH_IDLE_MATCH_WINDOW_HPP
 
 #include <centurion.hpp>
 #include <random>

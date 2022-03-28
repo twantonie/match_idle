@@ -6,6 +6,7 @@
 
 #include <centurion.hpp>
 
+#include "assets.hpp"
 #include "match_window.hpp"
 
 using namespace match_idle;
@@ -45,7 +46,8 @@ void handle_main_menu(GameData *data) {
 
   data->renderer.clear_with(cen::colors::black);
 
-  cen::font font{"C:/Code/match_idle/resources/daniel.ttf", 36};
+  cen::font font{TTF_OpenFontRW(Assets::get().file_raw("assets/daniel.ttf"),
+                                SDL_TRUE, 36)};
 
   data->renderer.set_color(cen::colors::white);
   auto title = data->renderer.render_solid_utf8("Main menu", font);
