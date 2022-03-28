@@ -10,18 +10,6 @@
             background-color: #333333;
         }
 
-        textarea.emscripten {
-            resize: none;
-            width: 600px;
-            height: 200px;
-            display: block;
-            border: 0px none;
-            padding: 8px;
-            background-color: #222222;
-            color: #ffffff;
-            margin: 0px;
-        }
-
         .content {
             border: 1px solid #333333;
             display: inline-block;
@@ -34,7 +22,6 @@
     <div class="content">
         <canvas class="emscripten" id="canvas" width="600" , height="360" oncontextmenu="event.preventDefault()"
             tabindex=-1></canvas>
-        <textarea class="emscripten" id="output" rows="8"></textarea>
     </div>
 
     <script type='text/javascript'>
@@ -50,11 +37,6 @@
                     }
 
                     console.log(text);
-
-                    if (element) {
-                        element.value += text + "\n";
-                        element.scrollTop = element.scrollHeight;
-                    }
                 };
             })(),
             printErr: function (text) {
