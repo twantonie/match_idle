@@ -78,7 +78,7 @@ std::vector<Match> find_matches(const std::vector<Piece> &board,
 
   for (size_t i = 0; i < board.size(); i++) {
     const auto &gem = board[i];
-    if (gem.type == Piece::Type::Empty) continue;
+    if (!gem.is_matchable()) continue;
 
     std::vector<size_t> horizontal_match{i};
     const size_t x_max = grid.cols * ((i + grid.cols) / grid.cols);
@@ -153,7 +153,7 @@ bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
   return true;
 }
 
-void swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
+bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
                std::vector<Piece> &board) {
   uint32_t index = pos.col + pos.row * grid.cols;
   uint32_t other_index{};
@@ -166,7 +166,12 @@ void swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
     other_index = index - grid.cols;
   }
 
-  std::swap(board[index], board[other_index]);
+  if (board[index].is_matchable() && board[other_index].is_movable()) {
+    std::swap(board[index], board[other_index]);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 PossibleMatch find_possible_match(std::vector<Piece> &board,
@@ -178,7 +183,7 @@ PossibleMatch find_possible_match(std::vector<Piece> &board,
 
   if (!is_move_direction_valid(move_dir, grid, pos)) return possible_match;
 
-  swap_gems(move_dir, grid, pos, board);
+  if (!swap_gems(move_dir, grid, pos, board)) return possible_match;
 
   std::vector<Match> matches = find_matches(board, grid);
   if (matches.empty()) {

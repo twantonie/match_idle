@@ -64,14 +64,14 @@ void MatchArea::handle_events(cen::event &event) {
 
       if (is_move_direction_valid(_move_dir, grid, point)) {
         auto board_copy = _board;
-        swap_gems(_move_dir, grid, point, board_copy);
+        if (swap_gems(_move_dir, grid, point, board_copy)) {
+          auto matches = find_matches(board_copy, grid);
 
-        auto matches = find_matches(board_copy, grid);
-
-        if (!matches.empty()) {
-          _board = board_copy;
-          update_board(grid, _board, _gen);
-          _possible_matches = find_possible_matches(_board, grid);
+          if (!matches.empty()) {
+            _board = board_copy;
+            update_board(grid, _board, _gen);
+            _possible_matches = find_possible_matches(_board, grid);
+          }
         }
       }
 

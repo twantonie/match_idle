@@ -40,7 +40,7 @@ std::vector<Match> find_matches(const std::vector<Piece> &board,
 
 void remove_matches(std::vector<Piece> &board, const GridLayout &grid,
                     const std::vector<Match> &matches);
-void swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
+bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
                std::vector<Piece> &board);
 
 struct PossibleMatch {

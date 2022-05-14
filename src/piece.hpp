@@ -42,6 +42,9 @@ struct Piece {
     return stream << static_cast<uint32_t>(gem.type);
   }
 
+  bool is_movable() const;
+  bool is_matchable() const;
+
   Type type;
   Special special{Special::None};
 };
