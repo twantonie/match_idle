@@ -15,6 +15,7 @@ find_package(centurion REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(PhysFS REQUIRED)
 find_package(Boost REQUIRED)
+find_package(OpenCV REQUIRED)
 
 file(GLOB ZIP_FILES "${CMAKE_CURRENT_SOURCE_DIR}/assets/*")
 add_custom_command(
@@ -27,8 +28,12 @@ add_custom_command(
 add_library(lib STATIC src/match_window.cpp src/assets.cpp src/piece.cpp
                        src/board.cpp)
 target_link_libraries(lib PUBLIC centurion::centurion fmt::fmt physfs::physfs
-                                 Boost::Boost)
+                                 Boost::Boost opencv::opencv)
 target_include_directories(lib PUBLIC src)
+
+if(WIN32)
+  target_sources(lib PRIVATE src/window_recognition.cpp)
+endif()
 
 add_executable(match_idle src/main.cpp)
 target_link_libraries(match_idle PRIVATE lib)

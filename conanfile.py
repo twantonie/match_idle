@@ -1,7 +1,7 @@
 from conans import ConanFile, CMake, tools
 
 
-class ChronopticsToF(ConanFile):
+class MatchIdle(ConanFile):
     scm = {
         "type": "git",
         "url": "git@github.com:twantonie/match_idle.git",
@@ -13,7 +13,16 @@ class ChronopticsToF(ConanFile):
     options = {"shared": [True, False], "compile_device": [True, False]}
     default_options = {"shared": False, "compile_device": False}
 
-    requires = ["centurion/6.3.0", "spdlog/1.9.2", "physfs/3.0.2", "boost/1.78.0"]
+    requires = [
+        "centurion/6.3.0",
+        "spdlog/1.9.2",
+        "physfs/3.0.2",
+        "boost/1.78.0",
+        "opencv/4.5.5",
+        "zlib/1.2.11",
+        "libwebp/1.2.1",
+        "freetype/2.10.4",
+    ]
 
     generators = "cmake_find_package", "cmake_paths", "virtualenv"
 

@@ -1,1 +1,3 @@
-add_subdirectory(gems_of_war)
+if(WIN32)
+  add_subdirectory(gems_of_war)
+endif()
