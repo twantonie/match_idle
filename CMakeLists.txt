@@ -24,7 +24,8 @@ add_custom_command(
   DEPENDS ${ZIP_FILES}
   VERBATIM USES_TERMINAL)
 
-add_library(lib STATIC src/match_window.cpp src/assets.cpp)
+add_library(lib STATIC src/match_window.cpp src/assets.cpp src/piece.cpp
+                       src/board.cpp)
 target_link_libraries(lib PUBLIC centurion::centurion fmt::fmt physfs::physfs
                                  Boost::Boost)
 target_include_directories(lib PUBLIC src)
