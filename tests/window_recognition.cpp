@@ -32,7 +32,9 @@ std::array<std::vector<mi::Piece>, 8> boards{
         {T::Sack}, {T::Sack}, {T::Gold}, {T::BrownChest}, {T::GreenChest}, {T::Copper}, {T::Gold}, {T::Copper},
         {T::Copper}, {T::Sack}, {T::Silver}, {T::GreenChest}, {T::RedChest}, {T::Silver}, {T::Gold}, {T::Gold},
         {T::Copper}, {T::RedChest}, {T::BrownChest}, {T::Copper}, {T::Silver}, {T::BrownChest}, {T::Sack}, {T::Gold}
-    }
+    },
+    std::vector<mi::Piece>{},
+    std::vector<mi::Piece>{},
 };
 // clang-format on
 

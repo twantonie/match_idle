@@ -1,9 +1,12 @@
 #include "window_recognition.hpp"
 
-#include <Windows.h>
 #include <fmt/core.h>
 
+#include <opencv2/imgproc/imgproc.hpp>
 #include <stdexcept>
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
 namespace cheat {
 
@@ -60,11 +63,15 @@ cv::Mat resize_to_screen(const cv::Mat &screenshot, const char *window_name) {
   RECT windowsize;
   GetWindowRect(window, &windowsize);
 
-  return screenshot(
+  auto range = screenshot(
       cv::Range(std::clamp<long>(windowsize.top, 0, screenshot.rows),
                 std::clamp<long>(windowsize.bottom, 0, screenshot.rows)),
       cv::Range(std::clamp<long>(windowsize.left, 0, screenshot.cols),
                 std::clamp<long>(windowsize.right, 0, screenshot.cols)));
+
+  cv::Mat ret;
+  cv::cvtColor(range, ret, cv::COLOR_BGRA2BGR);
+  return ret;
 }
 
 static bool close_pixel(const cv::Vec3b &lhs, const cv::Vec3b &rhs) {
@@ -194,7 +201,7 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
             "b3 {} g3 {} r3 {}\n",
             r, c, pixel_1[0], pixel_1[1], pixel_1[2], pixel_2[0], pixel_2[1],
             pixel_2[2], pixel_4[0], pixel_4[1], pixel_4[2]);
-        assert(false);
+        // throw std::runtime_error("Unrecognized pixel");
       }
 
       board[r * board_rows + c] = mi::Piece(type);
