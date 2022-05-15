@@ -22,6 +22,7 @@ struct Piece {
     Silver,
     Gold,
     Sack,
+    BrownChest,
     GreenChest,
     RedChest,
     Vault,
