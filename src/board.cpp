@@ -153,7 +153,7 @@ static size_t get_remove_type_location(const GridLayout &grid, MoveDir move_dir,
     }
 
     size_t other_index = calculate_other_index(index, move_dir, grid);
-    it = std::find(indices.begin(), indices.end(), index);
+    it = std::find(indices.begin(), indices.end(), other_index);
     if (it != indices.end()) {
       return other_index;
     }
@@ -269,6 +269,8 @@ static PossibleMatch find_possible_match(std::vector<Piece> &board,
     if (remove_type != RemoveType::None) {
       auto new_matches = find_matches(board, grid);
       while (!new_matches.empty()) {
+        possible_match.matches.insert(possible_match.matches.begin(),
+                                      new_matches.begin(), new_matches.end());
         remove_matches(board, grid, new_matches, move_dir, pos, remove_type);
         new_matches = find_matches(board, grid);
       }
