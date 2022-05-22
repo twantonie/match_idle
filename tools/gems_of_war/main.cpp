@@ -1,4 +1,3 @@
-#include <conio.h>
 #include <fmt/core.h>
 
 #include <opencv2/imgcodecs.hpp>
@@ -6,34 +5,66 @@
 
 #include "window_recognition.hpp"
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 namespace mi = match_idle;
 
 enum class Option { PrintBoard, SaveScreenshot, Continue, Quit };
 
-std::optional<Option> char_to_option(char ch) {
-  switch (ch) {
-    case 'p':
+// TODO: Add option to automatically apply best match
+struct Key {
+  int id;
+  UINT key;
+};
+
+constexpr Key print_board_k{1, 0x50};
+constexpr Key save_screenshot_k{2, 0x53};
+constexpr Key continue_k{3, 0x43};
+constexpr Key quit_k{4, 0x51};
+
+std::optional<Option> id_to_option(int id) {
+  switch (id) {
+    case print_board_k.id:
       return Option::PrintBoard;
-    case 's':
+    case save_screenshot_k.id:
       return Option::SaveScreenshot;
-    case 'c':
+    case continue_k.id:
       return Option::Continue;
-    case 'q':
+    case quit_k.id:
       return Option::Quit;
     default:
       return {};
   }
 }
 
+void register_key(Key key) {
+  if (!RegisterHotKey(NULL, key.id, MOD_CONTROL | MOD_NOREPEAT, key.key)) {
+    throw std::runtime_error(
+        fmt::format("Failed to register key {}:{}", key.id, key.key));
+  }
+}
+
+void register_keys() {
+  register_key(print_board_k);
+  register_key(save_screenshot_k);
+  register_key(continue_k);
+  register_key(quit_k);
+}
+
 Option parse_input() {
   std::optional<Option> option;
 
+  MSG msg{};
   while (!option) {
     fmt::print(
-        "Enter character: c (continue), p (print board), s (save sceenshot) or "
-        "q (quit)\n");
-    char ch = _getch();
-    option = char_to_option(ch);
+        "Press key + ctrl: c (continue), p (print board), s (save sceenshot) "
+        "or q (quit)\n");
+    if (GetMessage(&msg, NULL, 0, 0) != 0) {
+      if (msg.message == WM_HOTKEY) {
+        option = id_to_option(msg.wParam);
+      }
+    }
   }
 
   return *option;
@@ -50,16 +81,16 @@ size_t largest_match(const mi::PossibleMatch &possible_match) {
 
 void print_board(const std::vector<mi::Piece> &board,
                  const mi::GridLayout &grid) {
-  fmt::print("{{\n");
+  fmt::print("std::vector<mi::Piece> board{{\n");
   for (size_t r = 0; r < grid.rows; r++) {
-    fmt::print("    ");
+    fmt::print("  ");
     for (size_t c = 0; c < grid.cols; c++) {
       size_t index = r * grid.cols + c;
       fmt::print("{{Type::{}}}, ", mi::to_string(board[index].type));
     }
     fmt::print("\n");
   }
-  fmt::print("}}");
+  fmt::print("}};\n");
 }
 
 void print_match(const mi::PossibleMatch &possible_match) {
@@ -81,7 +112,13 @@ void print_matches(std::vector<mi::PossibleMatch> matches) {
         if (lhs_size > rhs_size) {
           return true;
         } else if (lhs_size == rhs_size) {
-          return lhs.matches.size() > rhs.matches.size();
+          if (lhs.matches.size() > rhs.matches.size()) {
+            return true;
+          } else if (lhs.matches.size() == rhs.matches.size()) {
+            return lhs.pos.row > rhs.pos.row;
+          } else {
+            return false;
+          }
         } else {
           return false;
         }
@@ -94,6 +131,8 @@ void print_matches(std::vector<mi::PossibleMatch> matches) {
 
 int main() {
   static constexpr mi::GridLayout grid{8, 8};
+
+  register_keys();
 
   bool going{true};
   while (going) {
