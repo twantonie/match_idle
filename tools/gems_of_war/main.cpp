@@ -14,7 +14,8 @@ int main() {
 
   try {
     auto board = cheat::read_board(window);
-    auto matches = mi::find_possible_matches(board, grid);
+    auto matches =
+        mi::find_possible_matches(board, grid, mi::RemoveType::Upgrade);
 
     for (auto &possible_match : matches) {
       fmt::print(

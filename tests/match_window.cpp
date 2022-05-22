@@ -130,7 +130,7 @@ TEST_CASE("Remove matches") {
     std::vector<mi::Match> matches{mi::Match{{2, 3}}};
 
     std::vector<mi::Piece> expected_board{
-        {Type::Empty}, {Type::Empty}, {Type::Blue}, {Type::Blue}};
+        {Type::Blue}, {Type::Blue}, {Type::Empty}, {Type::Empty}};
 
     mi::remove_matches(board, grid, matches);
 
@@ -178,9 +178,131 @@ TEST_CASE("Remove matches") {
     std::vector<mi::Match> matches{mi::Match{{1}}, mi::Match{{3}}};
 
     std::vector<mi::Piece> expected_board{
-        {Type::Empty}, {Type::Empty}, {Type::White}, {Type::Green}};
+        {Type::White}, {Type::Empty}, {Type::Green}, {Type::Empty}};
 
     mi::remove_matches(board, grid, matches);
+
+    CHECK(board == expected_board);
+  }
+
+  SECTION("Upgrade") {
+    SECTION("Move") {
+      std::vector<mi::Piece> board{
+          {Type::Copper}, {Type::Copper}, {Type::Silver}, {Type::Copper}};
+
+      mi::GridLayout grid{2, 2};
+
+      std::vector<mi::Match> matches{mi::Match{{0, 1}, Type::Copper}};
+
+      std::vector<mi::Piece> expected_board{
+          {Type::Silver}, {Type::Empty}, {Type::Silver}, {Type::Copper}};
+
+      mi::remove_matches(board, grid, matches, mi::MoveDir::Down,
+                         mi::Point{0, 0}, mi::RemoveType::Upgrade);
+
+      CHECK(board == expected_board);
+    }
+
+    SECTION("3") {
+      std::vector<mi::Piece> board{
+          {Type::Copper}, {Type::Copper}, {Type::Copper}};
+
+      mi::GridLayout grid{1, 3};
+
+      std::vector<mi::Match> matches{mi::Match{{0, 1, 2}, Type::Copper}};
+
+      std::vector<mi::Piece> expected_board{
+          {Type::Empty}, {Type::Silver}, {Type::Empty}};
+
+      mi::remove_matches(board, grid, matches, mi::MoveDir::None,
+                         mi::Point{0, 0}, mi::RemoveType::Upgrade);
+
+      CHECK(board == expected_board);
+    }
+
+    SECTION("4") {
+      std::vector<mi::Piece> board{
+          {Type::Copper}, {Type::Copper}, {Type::Copper}, {Type::Copper}};
+
+      mi::GridLayout grid{1, 4};
+
+      std::vector<mi::Match> matches{mi::Match{{0, 1, 2, 3}, Type::Copper}};
+
+      std::vector<mi::Piece> expected_board{
+          {Type::Empty}, {Type::Empty}, {Type::Silver}, {Type::Empty}};
+
+      mi::remove_matches(board, grid, matches, mi::MoveDir::None,
+                         mi::Point{0, 0}, mi::RemoveType::Upgrade);
+
+      CHECK(board == expected_board);
+    }
+
+    SECTION("5") {
+      std::vector<mi::Piece> board{{Type::Copper},
+                                   {Type::Copper},
+                                   {Type::Copper},
+                                   {Type::Copper},
+                                   {Type::Copper}};
+
+      mi::GridLayout grid{1, 5};
+
+      std::vector<mi::Match> matches{mi::Match{{0, 1, 2, 3, 4}, Type::Copper}};
+
+      std::vector<mi::Piece> expected_board{{Type::Empty},
+                                            {Type::Empty},
+                                            {Type::Silver},
+                                            {Type::Empty},
+                                            {Type::Empty}};
+
+      mi::remove_matches(board, grid, matches, mi::MoveDir::None,
+                         mi::Point{0, 0}, mi::RemoveType::Upgrade);
+
+      CHECK(board == expected_board);
+    }
+  }
+}
+
+TEST_CASE("Drop matches") {
+  using Type = mi::Piece::Type;
+
+  SECTION("Drop") {
+    std::vector<mi::Piece> board{
+        {Type::Blue}, {Type::Blue}, {Type::Empty}, {Type::Empty}};
+
+    mi::GridLayout grid{2, 2};
+
+    std::vector<mi::Piece> expected_board{
+        {Type::Empty}, {Type::Empty}, {Type::Blue}, {Type::Blue}};
+
+    mi::drop_gems(board, grid);
+
+    CHECK(board == expected_board);
+  }
+
+  SECTION("No drop") {
+    std::vector<mi::Piece> board{
+        {Type::Empty}, {Type::Empty}, {Type::Green}, {Type::Yellow}};
+
+    mi::GridLayout grid{2, 2};
+
+    std::vector<mi::Piece> expected_board{
+        {Type::Empty}, {Type::Empty}, {Type::Green}, {Type::Yellow}};
+
+    mi::drop_gems(board, grid);
+
+    CHECK(board == expected_board);
+  }
+
+  SECTION("Multiple drops") {
+    std::vector<mi::Piece> board{
+        {Type::White}, {Type::Empty}, {Type::Green}, {Type::Empty}};
+
+    mi::GridLayout grid{4, 1};
+
+    std::vector<mi::Piece> expected_board{
+        {Type::Empty}, {Type::Empty}, {Type::White}, {Type::Green}};
+
+    mi::drop_gems(board, grid);
 
     CHECK(board == expected_board);
   }
@@ -195,7 +317,8 @@ TEST_CASE("Possible matches") {
 
   mi::GridLayout grid{3, 3};
 
-  auto possible_matches = mi::find_possible_matches(board, grid);
+  auto possible_matches =
+      mi::find_possible_matches(board, grid, mi::RemoveType::None);
 
   CHECK(possible_matches.size() == 2);
 

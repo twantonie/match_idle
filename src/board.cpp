@@ -1,6 +1,7 @@
 #include "board.hpp"
 
 #include <algorithm>
+#include <numeric>
 
 namespace match_idle {
 
@@ -105,7 +106,7 @@ std::vector<Match> find_matches(const std::vector<Piece> &board,
   return matches;
 }
 
-static void drop_gems(std::vector<Piece> &board, const GridLayout &grid) {
+void drop_gems(std::vector<Piece> &board, const GridLayout &grid) {
   // Check column by column, start from bottom
   for (size_t c = 0; c < grid.cols; c++) {
     int empty_row = -1;
@@ -125,21 +126,98 @@ static void drop_gems(std::vector<Piece> &board, const GridLayout &grid) {
   }
 }
 
+static size_t calculate_index(Point pos, const GridLayout &grid) {
+  return pos.col + pos.row * grid.cols;
+}
+
+static size_t calculate_other_index(size_t index, MoveDir move_dir,
+                                    const GridLayout &grid) {
+  if (move_dir == MoveDir::Right || move_dir == MoveDir::Left) {
+    return index + (move_dir == MoveDir::Right ? 1 : -1);
+  } else if (move_dir == MoveDir::Down) {
+    return index + grid.cols;
+  } else {
+    return index - grid.cols;
+  }
+}
+
+static size_t get_remove_type_location(const GridLayout &grid, MoveDir move_dir,
+                                       Point pos, const Match &match) {
+  const auto indices = match.indices;
+
+  if (move_dir != MoveDir::None) {
+    size_t index = calculate_index(pos, grid);
+    auto it = std::find(indices.begin(), indices.end(), index);
+    if (it != indices.end()) {
+      return index;
+    }
+
+    size_t other_index = calculate_other_index(index, move_dir, grid);
+    it = std::find(indices.begin(), indices.end(), index);
+    if (it != indices.end()) {
+      return other_index;
+    }
+
+    // Something weird is going on if a match is found that doesn't relate to
+    // the move. Fall through just to find an index
+  }
+
+  // If there is no direction the new piece spawns in the middle. For 4 in a
+  // row vertically it is the third piece that is converted, horizontally this
+  // is the case too. With third piece I mean third starting from the left or
+  // top respectively. With a cross match (five 3 both ways) that fell
+  // together the match is top right |- for such a shape. Same for T shape. It
+  // seems to be the bottom right for more intricate matches
+
+  // XXX: This is not gonna do the trick for more complicated shapes, but
+  // should work for simple horizontal and vertical matches
+  size_t total = std::accumulate(indices.begin(), indices.end(), 0);
+  size_t avg = std::ceil(1.0 * total / indices.size());
+  return *std::find_if(indices.begin(), indices.end(),
+                       [avg](size_t index) { return index >= avg; });
+}
+
+static Piece::Type upgrade_piece_type(Piece::Type type) {
+  uint32_t raw_type = static_cast<uint32_t>(type);
+  raw_type++;
+  return static_cast<Piece::Type>(raw_type);
+}
+
+static Piece::Special match_size_to_special(size_t nr_indices) {
+  switch (nr_indices) {
+    case 4:
+      return Piece::Special::Explosive;
+    case 5:
+      return Piece::Special::Lightning;
+    case 6:
+      return Piece::Special::HyperCube;
+    default:
+      return Piece::Special::None;
+  }
+}
+
 void remove_matches(std::vector<Piece> &board, const GridLayout &grid,
-                    const std::vector<Match> &matches) {
+                    const std::vector<Match> &matches, MoveDir move_dir,
+                    Point pos, RemoveType remove_type) {
   for (auto &match : matches) {
+    // TODO: Apply special of gems if any
+
     for (auto indice : match.indices) {
       board[indice].type = Piece::Type::Empty;
     }
 
-    // TODO: Apply special of gems if any
-
-    // TODO: Need to insert special gems, closest to where the match was made.
-    // But in some instances you don't want this to happen, for instance at
-    // startup
+    if (remove_type == RemoveType::Upgrade) {
+      size_t upgrade_index =
+          get_remove_type_location(grid, move_dir, pos, match);
+      board[upgrade_index].type = upgrade_piece_type(match.type);
+    } else if (remove_type == RemoveType::Special && match.indices.size() > 3) {
+      size_t upgrade_index =
+          get_remove_type_location(grid, move_dir, pos, match);
+      board[upgrade_index].type = upgrade_piece_type(match.type);
+      board[upgrade_index].special =
+          match_size_to_special(match.indices.size());
+    }
   }
-
-  drop_gems(board, grid);
 }
 
 bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
@@ -155,18 +233,10 @@ bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
 
 bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
                std::vector<Piece> &board) {
-  uint32_t index = pos.col + pos.row * grid.cols;
-  uint32_t other_index{};
+  const uint32_t index = calculate_index(pos, grid);
+  const uint32_t other_index = calculate_other_index(index, move_dir, grid);
 
-  if (move_dir == MoveDir::Right || move_dir == MoveDir::Left) {
-    other_index = index + (move_dir == MoveDir::Right ? 1 : -1);
-  } else if (move_dir == MoveDir::Down) {
-    other_index = index + grid.cols;
-  } else {
-    other_index = index - grid.cols;
-  }
-
-  if (board[index].is_matchable() && board[other_index].is_movable()) {
+  if (board[other_index].is_movable()) {
     std::swap(board[index], board[other_index]);
     return true;
   } else {
@@ -174,9 +244,10 @@ bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
   }
 }
 
-PossibleMatch find_possible_match(std::vector<Piece> &board,
-                                  const GridLayout &grid, Point pos,
-                                  MoveDir move_dir) {
+static PossibleMatch find_possible_match(std::vector<Piece> &board,
+                                         const GridLayout &grid, Point pos,
+                                         MoveDir move_dir,
+                                         RemoveType remove_type) {
   PossibleMatch possible_match;
   possible_match.pos = pos;
   possible_match.move_dir = move_dir;
@@ -192,7 +263,18 @@ PossibleMatch find_possible_match(std::vector<Piece> &board,
   }
 
   while (!matches.empty()) {
-    remove_matches(board, grid, matches);
+    remove_matches(board, grid, matches, move_dir, pos, remove_type);
+    move_dir = MoveDir::None;
+
+    if (remove_type != RemoveType::None) {
+      auto new_matches = find_matches(board, grid);
+      while (!new_matches.empty()) {
+        remove_matches(board, grid, new_matches, move_dir, pos, remove_type);
+        new_matches = find_matches(board, grid);
+      }
+    }
+
+    drop_gems(board, grid);
 
     possible_match.matches.insert(possible_match.matches.begin(),
                                   matches.begin(), matches.end());
@@ -204,7 +286,8 @@ PossibleMatch find_possible_match(std::vector<Piece> &board,
 }
 
 std::vector<PossibleMatch> find_possible_matches(
-    const std::vector<Piece> &board, const GridLayout &grid) {
+    const std::vector<Piece> &board, const GridLayout &grid,
+    RemoveType remove_type) {
   std::vector<PossibleMatch> possible_matches;
 
   std::vector<Piece> board_copy = board;
@@ -220,10 +303,10 @@ std::vector<PossibleMatch> find_possible_matches(
 
   for (uint32_t r = 0; r < grid.rows; r++) {
     for (uint32_t c = 0; c < grid.cols; c++) {
-      add_match(
-          find_possible_match(board_copy, grid, Point{r, c}, MoveDir::Right));
-      add_match(
-          find_possible_match(board_copy, grid, Point{r, c}, MoveDir::Down));
+      add_match(find_possible_match(board_copy, grid, Point{r, c},
+                                    MoveDir::Right, remove_type));
+      add_match(find_possible_match(board_copy, grid, Point{r, c},
+                                    MoveDir::Down, remove_type));
     }
   }
 

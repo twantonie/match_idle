@@ -28,7 +28,8 @@ bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
 
 struct Match {
   Match() = default;
-  Match(std::vector<size_t> _indices) : indices(_indices) {}
+  Match(std::vector<size_t> _indices, Piece::Type _type = Piece::Type::Empty)
+      : indices(_indices), type(_type) {}
 
   std::vector<size_t> indices;
   Piece::Type type{Piece::Type::Empty};
@@ -38,8 +39,15 @@ struct Match {
 std::vector<Match> find_matches(const std::vector<Piece> &board,
                                 const GridLayout &grid);
 
+enum class RemoveType { None, Special, Upgrade };
+
 void remove_matches(std::vector<Piece> &board, const GridLayout &grid,
-                    const std::vector<Match> &matches);
+                    const std::vector<Match> &matches,
+                    MoveDir move_dir = MoveDir::None, Point pos = {},
+                    RemoveType remove_type = RemoveType::None);
+
+void drop_gems(std::vector<Piece> &board, const GridLayout &grid);
+
 bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
                std::vector<Piece> &board);
 
@@ -50,7 +58,8 @@ struct PossibleMatch {
 };
 
 std::vector<PossibleMatch> find_possible_matches(
-    const std::vector<Piece> &board, const GridLayout &grid);
+    const std::vector<Piece> &board, const GridLayout &grid,
+    RemoveType remove_type);
 
 }  // namespace match_idle
 

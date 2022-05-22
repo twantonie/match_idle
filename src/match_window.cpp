@@ -30,6 +30,7 @@ static void update_board(GridLayout const &grid, std::vector<Piece> &board,
   do {
     matches = find_matches(board, grid);
     remove_matches(board, grid, matches);
+    drop_gems(board, grid);
     fill_empty_gems(board, gen);
   } while (!matches.empty());
 }
@@ -38,7 +39,7 @@ MatchArea::MatchArea(cen::irect area, std::mt19937 gen) : _gen(gen) {
   _board = fill_board(_gen, grid.rows * grid.cols);
 
   update_board(grid, _board, _gen);
-  _possible_matches = find_possible_matches(_board, grid);
+  _possible_matches = find_possible_matches(_board, grid, RemoveType::None);
   _update_area(area);
 }
 
@@ -70,7 +71,8 @@ void MatchArea::handle_events(cen::event &event) {
           if (!matches.empty()) {
             _board = board_copy;
             update_board(grid, _board, _gen);
-            _possible_matches = find_possible_matches(_board, grid);
+            _possible_matches =
+                find_possible_matches(_board, grid, RemoveType::None);
           }
         }
       }
