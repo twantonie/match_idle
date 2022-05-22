@@ -50,6 +50,8 @@ struct Piece {
   Special special{Special::None};
 };
 
+const char *to_string(Piece::Type type);
+
 }  // namespace match_idle
 
 #endif
