@@ -10,4 +10,12 @@ cv::Rect screen_position(char const *window_name);
 
 std::vector<match_idle::Piece> read_board(cv::Mat const &board);
 
+struct Key {
+  int id;
+  uint32_t key;
+};
+
+void register_key(Key key);
+int get_hotkey_id();
+
 }  // namespace cheat

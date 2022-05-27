@@ -206,4 +206,22 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
   return board;
 }
 
+void register_key(Key key) {
+  if (!RegisterHotKey(NULL, key.id, MOD_CONTROL | MOD_NOREPEAT, key.key)) {
+    throw std::runtime_error(
+        fmt::format("Failed to register key {}:{}", key.id, key.key));
+  }
+}
+
+int get_hotkey_id() {
+  MSG msg{};
+  if (GetMessage(&msg, NULL, 0, 0) != 0) {
+    if (msg.message == WM_HOTKEY) {
+      return msg.wParam;
+    }
+  }
+
+  return 0;
+}
+
 }  // namespace cheat

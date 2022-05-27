@@ -6,23 +6,16 @@
 
 #include "window_recognition.hpp"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
 namespace mi = match_idle;
 
 enum class Option { PrintBoard, SaveScreenshot, Continue, Quit };
 
 // TODO: Add option to automatically apply best match
-struct Key {
-  int id;
-  UINT key;
-};
 
-constexpr Key print_board_k{1, 0x50};
-constexpr Key save_screenshot_k{2, 0x53};
-constexpr Key continue_k{3, 0x43};
-constexpr Key quit_k{4, 0x51};
+constexpr cheat::Key print_board_k{1, 0x50};
+constexpr cheat::Key save_screenshot_k{2, 0x53};
+constexpr cheat::Key continue_k{3, 0x43};
+constexpr cheat::Key quit_k{4, 0x51};
 
 std::optional<Option> id_to_option(int id) {
   switch (id) {
@@ -39,32 +32,23 @@ std::optional<Option> id_to_option(int id) {
   }
 }
 
-void register_key(Key key) {
-  if (!RegisterHotKey(NULL, key.id, MOD_CONTROL | MOD_NOREPEAT, key.key)) {
-    throw std::runtime_error(
-        fmt::format("Failed to register key {}:{}", key.id, key.key));
-  }
-}
-
 void register_keys() {
-  register_key(print_board_k);
-  register_key(save_screenshot_k);
-  register_key(continue_k);
-  register_key(quit_k);
+  cheat::register_key(print_board_k);
+  cheat::register_key(save_screenshot_k);
+  cheat::register_key(continue_k);
+  cheat::register_key(quit_k);
 }
 
 Option parse_input() {
   std::optional<Option> option;
 
-  MSG msg{};
   while (!option) {
     fmt::print(
         "Press key + ctrl: c (continue), p (print board), s (save sceenshot) "
-        "or q (quit)\n");
-    if (GetMessage(&msg, NULL, 0, 0) != 0) {
-      if (msg.message == WM_HOTKEY) {
-        option = id_to_option(msg.wParam);
-      }
+        ", q (quit) or a (apply)\n");
+    int id = cheat::get_hotkey_id();
+    if (id != 0) {
+      option = id_to_option(id);
     }
   }
 
