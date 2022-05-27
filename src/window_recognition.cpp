@@ -2,7 +2,6 @@
 
 #include <fmt/core.h>
 
-#include <opencv2/imgproc/imgproc.hpp>
 #include <stdexcept>
 
 #define WIN32_LEAN_AND_MEAN
@@ -53,25 +52,21 @@ cv::Mat take_screenshot() {
   return src;
 }
 
-cv::Mat resize_to_screen(const cv::Mat &screenshot, const char *window_name) {
-  auto window = FindWindow(nullptr, window_name);
-  if (!window) {
-    throw std::runtime_error("Couldn't find window");
-  }
+cv::Rect screen_position(char const *window_name) {
+  HDC hwindowDC = GetDC(nullptr);
+  int width = GetDeviceCaps(hwindowDC, HORZRES);
+  int height = GetDeviceCaps(hwindowDC, VERTRES);
+  DeleteDC(hwindowDC);
 
-  // get the height and width of the screen
+  auto window = FindWindow(nullptr, window_name);
   RECT windowsize;
   GetWindowRect(window, &windowsize);
 
-  auto range = screenshot(
-      cv::Range(std::clamp<long>(windowsize.top, 0, screenshot.rows),
-                std::clamp<long>(windowsize.bottom, 0, screenshot.rows)),
-      cv::Range(std::clamp<long>(windowsize.left, 0, screenshot.cols),
-                std::clamp<long>(windowsize.right, 0, screenshot.cols)));
-
-  cv::Mat ret;
-  cv::cvtColor(range, ret, cv::COLOR_BGRA2BGR);
-  return ret;
+  return cv::Rect(
+      std::clamp<long>(windowsize.left, 0, width),
+      std::clamp<long>(windowsize.top, 0, height),
+      std::clamp<long>(windowsize.right - windowsize.left, 0, width),
+      std::clamp<long>(windowsize.bottom - windowsize.top, 0, height));
 }
 
 static bool close_pixel(const cv::Vec3b &lhs, const cv::Vec3b &rhs) {

@@ -1,6 +1,7 @@
 #include <fmt/core.h>
 
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <optional>
 
 #include "window_recognition.hpp"
@@ -130,14 +131,17 @@ void print_matches(std::vector<mi::PossibleMatch> matches) {
 }
 
 int main() {
+  static constexpr char window_name_k[] = "GemsOfWar";
   static constexpr mi::GridLayout grid{8, 8};
 
   register_keys();
+  auto screen_pos = cheat::screen_position(window_name_k);
 
   bool going{true};
   while (going) {
     auto screenshot = cheat::take_screenshot();
-    auto window = cheat::resize_to_screen(screenshot, "GemsOfWar");
+    cv::Mat window;
+    cv::cvtColor(screenshot(screen_pos), window, cv::COLOR_BGRA2BGR);
 
     auto board = cheat::read_board(window);
     auto matches =
