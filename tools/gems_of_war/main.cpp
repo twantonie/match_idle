@@ -8,7 +8,7 @@
 
 namespace mi = match_idle;
 
-enum class Option { PrintBoard, SaveScreenshot, Continue, Quit };
+enum class Option { PrintBoard, SaveScreenshot, Continue, Quit, Apply };
 
 // TODO: Add option to automatically apply best match
 
@@ -16,6 +16,7 @@ constexpr cheat::Key print_board_k{1, 0x50};
 constexpr cheat::Key save_screenshot_k{2, 0x53};
 constexpr cheat::Key continue_k{3, 0x43};
 constexpr cheat::Key quit_k{4, 0x51};
+constexpr cheat::Key apply_k{5, 0x41};
 
 std::optional<Option> id_to_option(int id) {
   switch (id) {
@@ -27,6 +28,8 @@ std::optional<Option> id_to_option(int id) {
       return Option::Continue;
     case quit_k.id:
       return Option::Quit;
+    case apply_k.id:
+      return Option::Apply;
     default:
       return {};
   }
@@ -37,6 +40,7 @@ void register_keys() {
   cheat::register_key(save_screenshot_k);
   cheat::register_key(continue_k);
   cheat::register_key(quit_k);
+  cheat::register_key(apply_k);
 }
 
 Option parse_input() {
@@ -143,7 +147,11 @@ int main() {
         case Option::SaveScreenshot:
           cv::imwrite("screenshot.png", window);
           break;
-
+        case Option::Apply: {
+          auto &match = matches.front();
+          cheat::move_piece(match.move_dir, match.pos, screen_pos);
+          break;
+        }
         case Option::Quit:
           going = false;
           // fall-through

@@ -2,6 +2,7 @@
 
 #include <fmt/core.h>
 
+#include <random>
 #include <stdexcept>
 
 #define WIN32_LEAN_AND_MEAN
@@ -76,15 +77,16 @@ static bool close_pixel(const cv::Vec3b &lhs, const cv::Vec3b &rhs) {
          std::abs(lhs[2] - rhs[2]) < close_ness;
 }
 
+constexpr size_t row_start = 91;
+constexpr size_t col_start = 296;
+constexpr size_t square_height = 88;
+constexpr size_t square_width = 88;
+
 std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
   // With a resolution of 1200x800
   // Every square is 88x88 pixels, the board is 8x8 squares.
   // Start of board is 91r, 296c
 
-  static constexpr size_t row_start = 91;
-  static constexpr size_t col_start = 296;
-  static constexpr size_t square_height = 88;
-  static constexpr size_t square_width = 88;
   static constexpr size_t board_rows = 8;
   static constexpr size_t board_cols = 8;
 
@@ -204,6 +206,98 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
   }
 
   return board;
+}
+
+std::pair<long, long> calculate_coordinates(mi::Point pos,
+                                            const cv::Rect screen_pos,
+                                            float x_offset, float y_offset) {
+  std::pair<long, long> pair;
+  auto &dx = pair.first;
+  auto &dy = pair.second;
+
+  dx = screen_pos.x + col_start + pos.col * square_width +
+       x_offset * square_width;
+  dy = screen_pos.y + row_start + pos.row * square_height +
+       y_offset * square_height;
+
+  return pair;
+}
+
+struct RandomHelper {
+  std::mt19937 gen{std::random_device{}()};
+  std::uniform_real_distribution<float> offset_dist{0.1, 0.9};
+  std::bernoulli_distribution move_dist{0.5};
+
+  float offset() { return offset_dist(gen); }
+
+  bool move() { return move_dist(gen); }
+};
+
+void move_piece(match_idle::MoveDir move_dir, match_idle::Point pos,
+                const cv::Rect screen_pos) {
+  static RandomHelper random{};
+
+  float x_start_offset = random.offset();
+  float y_start_offset = random.offset();
+  float x_end_offset = random.offset();
+  float y_end_offset = random.offset();
+
+  bool flip_move = random.move();
+
+  auto new_pos = pos;
+  if (move_dir == mi::MoveDir::Right) {
+    new_pos.col += 1;
+  } else {
+    // Move dir down
+    new_pos.row += 1;
+  }
+
+  if (flip_move) {
+    std::swap(pos, new_pos);
+  }
+
+  // x == width; y == height
+  auto [dx_start, dy_start] =
+      calculate_coordinates(pos, screen_pos, x_start_offset, y_start_offset);
+  auto [dx_end, dy_end] =
+      calculate_coordinates(new_pos, screen_pos, x_end_offset, y_end_offset);
+
+  INPUT Inputs[3]{};
+
+  Inputs[0].type = INPUT_MOUSE;
+  Inputs[0].mi.dx = dx_start * 25.6;
+  Inputs[0].mi.dy = dy_start * 45.6;
+  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+
+  Inputs[1].type = INPUT_MOUSE;
+  Inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+  Inputs[2].type = INPUT_MOUSE;
+  Inputs[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+  SendInput(3, Inputs, sizeof(INPUT));
+  Sleep(50);
+
+  Inputs[0].type = INPUT_MOUSE;
+  Inputs[0].mi.dx = dx_end * 25.6;
+  Inputs[0].mi.dy = dy_end * 45.6;
+  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+
+  Inputs[1].type = INPUT_MOUSE;
+  Inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+  Inputs[2].type = INPUT_MOUSE;
+  Inputs[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+  SendInput(3, Inputs, sizeof(INPUT));
+  Sleep(50);
+
+  Inputs[0].type = INPUT_MOUSE;
+  Inputs[0].mi.dx = screen_pos.x * 25.6;
+  Inputs[0].mi.dy = screen_pos.y * 45.6;
+  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+
+  SendInput(1, Inputs, sizeof(INPUT));
 }
 
 void register_key(Key key) {
