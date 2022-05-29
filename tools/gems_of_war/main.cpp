@@ -68,20 +68,6 @@ size_t largest_match(const mi::PossibleMatch &possible_match) {
       ->indices.size();
 }
 
-void print_board(const std::vector<mi::Piece> &board,
-                 const mi::GridLayout &grid) {
-  fmt::print("std::vector<mi::Piece> board{{\n");
-  for (size_t r = 0; r < grid.rows; r++) {
-    fmt::print("  ");
-    for (size_t c = 0; c < grid.cols; c++) {
-      size_t index = r * grid.cols + c;
-      fmt::print("{{Type::{}}}, ", mi::to_string(board[index].type));
-    }
-    fmt::print("\n");
-  }
-  fmt::print("}};\n");
-}
-
 void print_match(const mi::PossibleMatch &possible_match) {
   fmt::print(
       "Location r {} c {} dir {:<5} Largest match: {} Number of matches: {}\n",
@@ -142,7 +128,7 @@ int main() {
 
       switch (option) {
         case Option::PrintBoard:
-          print_board(board, grid);
+          mi::print_board(board, grid);
           break;
         case Option::SaveScreenshot:
           cv::imwrite("screenshot.png", window);

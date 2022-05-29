@@ -12,6 +12,8 @@ struct GridLayout {
   uint32_t cols = 8;
 };
 
+void print_board(const std::vector<Piece> &board, const GridLayout &grid);
+
 enum class MoveDir { None, Up, Down, Left, Right };
 
 struct Point {

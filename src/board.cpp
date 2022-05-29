@@ -1,5 +1,7 @@
 #include "board.hpp"
 
+#include <fmt/core.h>
+
 #include <algorithm>
 #include <numeric>
 
@@ -7,6 +9,19 @@ namespace match_idle {
 
 // Calculates matches and returns them as a vector of matches, and each match is
 // a number of indices
+
+void print_board(const std::vector<Piece> &board, const GridLayout &grid) {
+  fmt::print("std::vector<Piece> board{{\n");
+  for (size_t r = 0; r < grid.rows; r++) {
+    fmt::print("  ");
+    for (size_t c = 0; c < grid.cols; c++) {
+      size_t index = r * grid.cols + c;
+      fmt::print("{{Type::{}}}, ", to_string(board[index].type));
+    }
+    fmt::print("\n");
+  }
+  fmt::print("}};\n");
+}
 
 static void calculate_match(std::vector<size_t> &indices,
                             std::vector<Match> &matches, Piece::Type type) {
