@@ -251,7 +251,7 @@ bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
   const uint32_t index = calculate_index(pos, grid);
   const uint32_t other_index = calculate_other_index(index, move_dir, grid);
 
-  if (board[other_index].is_movable()) {
+  if (board[index].is_movable() && board[other_index].is_movable()) {
     std::swap(board[index], board[other_index]);
     return true;
   } else {

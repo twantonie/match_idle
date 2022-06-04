@@ -57,6 +57,13 @@ struct PossibleMatch {
   Point pos;
   MoveDir move_dir;
   std::vector<Match> matches;
+
+  bool operator==(const PossibleMatch &other) const {
+    return pos == other.pos && move_dir == other.move_dir;
+  }
+  bool operator!=(const PossibleMatch &other) const {
+    return !(*this == other);
+  }
 };
 
 std::vector<PossibleMatch> find_possible_matches(
