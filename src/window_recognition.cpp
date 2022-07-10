@@ -200,6 +200,35 @@ struct RandomHelper {
   bool move() { return move_dist(gen); }
 };
 
+std::pair<long, long> get_mouse_pos() {
+  POINT point;
+  GetCursorPos(&point);
+  return std::make_pair(point.x, point.y);
+}
+
+void move_mouse(long x_pos, long y_pos) {
+  INPUT Inputs[1]{};
+
+  Inputs[0].type = INPUT_MOUSE;
+  Inputs[0].mi.dx = x_pos * 25.6;
+  Inputs[0].mi.dy = y_pos * 45.6;
+  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+
+  SendInput(1, Inputs, sizeof(INPUT));
+}
+
+void click_mouse() {
+  INPUT Inputs[2]{};
+
+  Inputs[0].type = INPUT_MOUSE;
+  Inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+  Inputs[1].type = INPUT_MOUSE;
+  Inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+  SendInput(2, Inputs, sizeof(INPUT));
+}
+
 void move_piece(match_idle::MoveDir move_dir, match_idle::Point pos,
                 const cv::Rect screen_pos) {
   static RandomHelper random{};
@@ -229,42 +258,17 @@ void move_piece(match_idle::MoveDir move_dir, match_idle::Point pos,
   auto [dx_end, dy_end] =
       calculate_coordinates(new_pos, screen_pos, x_end_offset, y_end_offset);
 
-  INPUT Inputs[3]{};
+  move_mouse(dx_start, dy_start);
+  click_mouse();
 
-  Inputs[0].type = INPUT_MOUSE;
-  Inputs[0].mi.dx = dx_start * 25.6;
-  Inputs[0].mi.dy = dy_start * 45.6;
-  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
-
-  Inputs[1].type = INPUT_MOUSE;
-  Inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-  Inputs[2].type = INPUT_MOUSE;
-  Inputs[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-
-  SendInput(3, Inputs, sizeof(INPUT));
   Sleep(50);
 
-  Inputs[0].type = INPUT_MOUSE;
-  Inputs[0].mi.dx = dx_end * 25.6;
-  Inputs[0].mi.dy = dy_end * 45.6;
-  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+  move_mouse(dx_end, dy_end);
+  click_mouse();
 
-  Inputs[1].type = INPUT_MOUSE;
-  Inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-  Inputs[2].type = INPUT_MOUSE;
-  Inputs[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-
-  SendInput(3, Inputs, sizeof(INPUT));
   Sleep(50);
 
-  Inputs[0].type = INPUT_MOUSE;
-  Inputs[0].mi.dx = screen_pos.x * 25.6;
-  Inputs[0].mi.dy = screen_pos.y * 45.6;
-  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
-
-  SendInput(1, Inputs, sizeof(INPUT));
+  move_mouse(screen_pos.x + col_start / 2, screen_pos.y + row_start / 2);
 }
 
 void register_key(Key key) {
