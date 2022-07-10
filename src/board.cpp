@@ -10,8 +10,8 @@ namespace match_idle {
 // Calculates matches and returns them as a vector of matches, and each match is
 // a number of indices
 
-void print_board(const std::vector<Piece> &board, const GridLayout &grid) {
-  fmt::print("std::vector<Piece> board{{\n");
+void print_board(const Board &board, const GridLayout &grid) {
+  fmt::print("Board board{{\n");
   for (size_t r = 0; r < grid.rows; r++) {
     fmt::print("  ");
     for (size_t c = 0; c < grid.cols; c++) {
@@ -88,8 +88,7 @@ void filter_matches(std::vector<Match> &matches) {
   }
 }
 
-std::vector<Match> find_matches(const std::vector<Piece> &board,
-                                const GridLayout &grid) {
+std::vector<Match> find_matches(const Board &board, const GridLayout &grid) {
   std::vector<Match> matches;
 
   for (size_t i = 0; i < board.size(); i++) {
@@ -121,7 +120,7 @@ std::vector<Match> find_matches(const std::vector<Piece> &board,
   return matches;
 }
 
-void drop_gems(std::vector<Piece> &board, const GridLayout &grid) {
+void drop_gems(Board &board, const GridLayout &grid) {
   // Check column by column, start from bottom
   for (size_t c = 0; c < grid.cols; c++) {
     int empty_row = -1;
@@ -211,7 +210,7 @@ static Piece::Special match_size_to_special(size_t nr_indices) {
   }
 }
 
-void remove_matches(std::vector<Piece> &board, const GridLayout &grid,
+void remove_matches(Board &board, const GridLayout &grid,
                     const std::vector<Match> &matches, MoveDir move_dir,
                     Point pos, RemoveType remove_type) {
   for (auto &match : matches) {
@@ -247,7 +246,7 @@ bool is_move_direction_valid(MoveDir move_dir, const GridLayout &grid,
 }
 
 bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
-               std::vector<Piece> &board) {
+               Board &board) {
   const uint32_t index = calculate_index(pos, grid);
   const uint32_t other_index = calculate_other_index(index, move_dir, grid);
 
@@ -259,9 +258,8 @@ bool swap_gems(MoveDir move_dir, const GridLayout &grid, Point pos,
   }
 }
 
-static PossibleMatch find_possible_match(std::vector<Piece> &board,
-                                         const GridLayout &grid, Point pos,
-                                         MoveDir move_dir,
+static PossibleMatch find_possible_match(Board &board, const GridLayout &grid,
+                                         Point pos, MoveDir move_dir,
                                          RemoveType remove_type) {
   PossibleMatch possible_match;
   possible_match.pos = pos;
@@ -302,12 +300,12 @@ static PossibleMatch find_possible_match(std::vector<Piece> &board,
   return possible_match;
 }
 
-std::vector<PossibleMatch> find_possible_matches(
-    const std::vector<Piece> &board, const GridLayout &grid,
-    RemoveType remove_type) {
+std::vector<PossibleMatch> find_possible_matches(const Board &board,
+                                                 const GridLayout &grid,
+                                                 RemoveType remove_type) {
   std::vector<PossibleMatch> possible_matches;
 
-  std::vector<Piece> board_copy = board;
+  Board board_copy = board;
 
   const auto add_match = [&](PossibleMatch match) {
     if (!match.matches.empty()) {
