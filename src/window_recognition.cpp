@@ -71,7 +71,7 @@ cv::Rect screen_position(char const *window_name) {
 }
 
 static bool close_pixel(const cv::Vec3b &lhs, const cv::Vec3b &rhs) {
-  static constexpr size_t close_ness = 3;
+  static constexpr size_t close_ness = 4;
   return std::abs(lhs[0] - rhs[0]) <= close_ness &&
          std::abs(lhs[1] - rhs[1]) <= close_ness &&
          std::abs(lhs[2] - rhs[2]) <= close_ness;
@@ -114,7 +114,7 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
   static const cv::Vec3b sack_color_2{72, 51, 56};
 
   static const cv::Vec3b brown_chest_color{16, 75, 170};
-  static const cv::Vec3b green_chest_color{56, 167, 23};
+  static const cv::Vec3b green_chest_color{56, 168, 23};
   static const cv::Vec3b red_chest_color{40, 0, 163};
 
   static const cv::Vec3b vault_color{23, 51, 65};
@@ -155,10 +155,10 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
                              vault_color)) {
         type = T::Vault;
       } else {
-        fmt::print(
-            "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{} \n", r,
-            c, coin_pixel[0], coin_pixel[1], coin_pixel[2], chest_pixel[0],
-            chest_pixel[1], chest_pixel[2]);
+        // fmt::print(
+        //     "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{} \n",
+        //     r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2],
+        //     chest_pixel[0], chest_pixel[1], chest_pixel[2]);
         // throw std::runtime_error("Unrecognized pixel");
       }
 

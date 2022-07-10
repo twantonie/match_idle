@@ -7,10 +7,10 @@
 namespace mi = match_idle;
 using T = mi::Piece::Type;
 
-constexpr size_t array_size = 10;
+constexpr size_t array_size = 11;
 
 // clang-format off
-std::array<std::vector<mi::Piece>, 10> boards{
+std::array<std::vector<mi::Piece>, array_size> boards{
     std::vector<mi::Piece>{
         {T::Gold}, {T::Gold}, {T::Copper}, {T::Silver}, {T::Gold}, {T::Silver}, {T::Gold}, {T::Sack},
         {T::Gold}, {T::BrownChest}, {T::Gold}, {T::Silver}, {T::Silver}, {T::Gold}, {T::Silver}, {T::Gold},
@@ -111,14 +111,24 @@ std::array<std::vector<mi::Piece>, 10> boards{
         {T::Copper}, {T::Silver}, {T::Vault}, {T::GreenChest}, {T::Copper}, {T::Gold}, {T::RedChest}, {T::Silver},
         {T::Gold}, {T::Sack}, {T::Copper}, {T::Gold}, {T::GreenChest}, {T::Vault}, {T::Gold}, {T::BrownChest},
     },
+    std::vector<mi::Piece>{
+        {T::Gold}, {T::Copper}, {T::Silver}, {T::Copper}, {T::Silver}, {T::Copper}, {T::Silver}, {T::Sack},
+        {T::Sack}, {T::Sack}, {T::Silver}, {T::Gold}, {T::Copper}, {T::Silver}, {T::GreenChest}, {T::Copper},
+        {T::Sack}, {T::Silver}, {T::Sack}, {T::Copper}, {T::Sack}, {T::Sack}, {T::Silver}, {T::Sack},
+        {T::Gold}, {T::Copper}, {T::GreenChest}, {T::BrownChest}, {T::Sack}, {T::Silver}, {T::BrownChest}, {T::Gold},
+        {T::Silver}, {T::Sack}, {T::Copper}, {T::Sack}, {T::Silver}, {T::BrownChest}, {T::Sack}, {T::BrownChest},
+        {T::BrownChest}, {T::Silver}, {T::Sack}, {T::Sack}, {T::RedChest}, {T::Sack}, {T::GreenChest}, {T::Silver},
+        {T::Sack}, {T::GreenChest}, {T::BrownChest}, {T::Vault}, {T::Copper}, {T::Sack}, {T::GreenChest}, {T::GreenChest},
+        {T::Silver}, {T::Copper}, {T::Gold}, {T::Gold}, {T::Sack}, {T::RedChest}, {T::Copper}, {T::Silver},
+    },
 };
 // clang-format on
 
-std::array<const char*, 10> file_names{
-    "treasure_hunt1.png", "treasure_hunt2.png", "treasure_hunt3.png",
-    "treasure_hunt4.png", "treasure_hunt5.png", "treasure_hunt6.png",
-    "treasure_hunt7.png", "treasure_hunt8.png", "treasure_hunt9.png",
-    "treasure_hunt10.png"};
+std::array<const char*, array_size> file_names{
+    "treasure_hunt1.png",  "treasure_hunt2.png", "treasure_hunt3.png",
+    "treasure_hunt4.png",  "treasure_hunt5.png", "treasure_hunt6.png",
+    "treasure_hunt7.png",  "treasure_hunt8.png", "treasure_hunt9.png",
+    "treasure_hunt10.png", "treasure_hunt11.png"};
 
 TEST_CASE("read board") {
   std::string file_location{FILE_DIR};
