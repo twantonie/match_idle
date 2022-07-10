@@ -79,16 +79,22 @@ static bool close_pixel(const cv::Vec3b &lhs, const cv::Vec3b &rhs) {
 
 constexpr size_t row_start = 91;
 constexpr size_t col_start = 296;
+
 constexpr size_t square_height = 88;
 constexpr size_t square_width = 88;
+
+static constexpr size_t board_rows = 8;
+static constexpr size_t board_cols = 8;
+
+cv::Rect board_position() {
+  return cv::Rect(col_start, row_start, square_width * board_cols,
+                  square_height * board_rows);
+}
 
 std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
   // With a resolution of 1200x800
   // Every square is 88x88 pixels, the board is 8x8 squares.
   // Start of board is 91r, 296c
-
-  static constexpr size_t board_rows = 8;
-  static constexpr size_t board_cols = 8;
 
   // For coins
   static constexpr size_t row_offset_coin = 40;
