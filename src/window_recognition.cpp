@@ -71,17 +71,17 @@ cv::Rect screen_position(char const *window_name) {
 }
 
 static bool close_pixel(const cv::Vec3b &lhs, const cv::Vec3b &rhs) {
-  static constexpr size_t close_ness = 4;
+  static constexpr size_t close_ness = 5;
   return std::abs(lhs[0] - rhs[0]) <= close_ness &&
          std::abs(lhs[1] - rhs[1]) <= close_ness &&
          std::abs(lhs[2] - rhs[2]) <= close_ness;
 }
 
-constexpr size_t row_start = 91;
-constexpr size_t col_start = 296;
+constexpr size_t row_start = 148;
+constexpr size_t col_start = 273;
 
-constexpr size_t square_height = 88;
-constexpr size_t square_width = 88;
+constexpr size_t square_height = 94;
+constexpr size_t square_width = 94;
 
 static constexpr size_t board_rows = 8;
 static constexpr size_t board_cols = 8;
@@ -92,36 +92,31 @@ cv::Rect board_position() {
 }
 
 std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
-  // With a resolution of 1200x800
-  // Every square is 88x88 pixels, the board is 8x8 squares.
-  // Start of board is 91r, 296c
-
-  // For coins
   static constexpr size_t row_offset_coin = 40;
   static constexpr size_t col_offset_coin = 40;
 
-  // For chests
-  static constexpr size_t row_offset_chest = 63;
-  static constexpr size_t col_offset_chest = 45;
+  static constexpr size_t row_offset_chest = 60;
+  static constexpr size_t col_offset_chest = 22;
 
-  // For vault
   static constexpr size_t row_offset_vault = 28;
   static constexpr size_t col_offset_vault = 35;
 
-  // For sack
   static constexpr size_t row_offset_sack = 66;
   static constexpr size_t col_offset_sack = 25;
+
+  static constexpr size_t row_offset_green_chest = 65;
+  static constexpr size_t col_offset_green_chest = 53;
 
   static const cv::Vec3b copper_color{38, 42, 132};
   static const cv::Vec3b silver_color{112, 98, 74};
   static const cv::Vec3b gold_color{35, 110, 192};
 
-  static const cv::Vec3b sack_color_1{66, 44, 42};
-  static const cv::Vec3b sack_color_2{72, 51, 56};
+  static const cv::Vec3b sack_color_1{75, 53, 59};
+  static const cv::Vec3b sack_color_2{81, 56, 64};
 
-  static const cv::Vec3b brown_chest_color{16, 75, 170};
-  static const cv::Vec3b green_chest_color{56, 168, 23};
-  static const cv::Vec3b red_chest_color{40, 0, 163};
+  static const cv::Vec3b brown_chest_color{0, 16, 54};
+  static const cv::Vec3b green_chest_color{69, 181, 24};
+  static const cv::Vec3b red_chest_color{13, 0, 69};
 
   static const cv::Vec3b vault_color{23, 51, 65};
 
@@ -138,6 +133,8 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
           row + row_offset_chest, col + col_offset_chest);
       const auto sack_pixel = board_image.at<cv::Vec3b>(row + row_offset_sack,
                                                         col + col_offset_sack);
+      const auto green_chest_pixel = board_image.at<cv::Vec3b>(
+          row + row_offset_green_chest, col + col_offset_green_chest);
 
       T type{T::Empty};
 
@@ -152,7 +149,7 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
         type = T::Sack;
       } else if (close_pixel(chest_pixel, brown_chest_color)) {
         type = T::BrownChest;
-      } else if (close_pixel(chest_pixel, green_chest_color)) {
+      } else if (close_pixel(green_chest_pixel, green_chest_color)) {
         type = T::GreenChest;
       } else if (close_pixel(chest_pixel, red_chest_color)) {
         type = T::RedChest;
@@ -161,10 +158,13 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
                              vault_color)) {
         type = T::Vault;
       } else {
-        // fmt::print(
-        //     "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{} \n",
-        //     r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2],
-        //     chest_pixel[0], chest_pixel[1], chest_pixel[2]);
+        fmt::print(
+            "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{} sack "
+            "{}:{}:{} green chest {}:{}:{}\n",
+            r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2], chest_pixel[0],
+            chest_pixel[1], chest_pixel[2], sack_pixel[0], sack_pixel[1],
+            sack_pixel[2], green_chest_pixel[0], green_chest_pixel[1],
+            green_chest_pixel[2]);
         // throw std::runtime_error("Unrecognized pixel");
       }
 

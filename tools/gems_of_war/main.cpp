@@ -217,7 +217,7 @@ int main() {
     if (number_of_empty_spaces(board) > 2) {
       fmt::print("Game finished, clicking\n");
 
-      cheat::move_mouse(screen_pos.x + 920, screen_pos.y + 775);
+      cheat::move_mouse(screen_pos.x + 920, screen_pos.y + 864);
       cheat::click_mouse();
       continue;
     }
