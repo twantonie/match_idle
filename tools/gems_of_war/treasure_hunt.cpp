@@ -194,6 +194,16 @@ static size_t number_of_empty_spaces(const mi::Board &board) {
   });
 }
 
+static void reset_mouse(int x, int y) {
+  for (size_t i = 0; i < 2; i++) {
+    cheat::move_mouse(x + 45, y + 45);
+    cheat::click_mouse();
+    std::this_thread::sleep_for(std::chrono::milliseconds{500});
+  }
+
+  cheat::move_mouse(0, 0);
+}
+
 int main() {
   static constexpr char window_name_k[] = "GemsOfWar";
   static constexpr mi::GridLayout grid{8, 8};
@@ -206,11 +216,19 @@ int main() {
   cv::Mat prev_window;
   cv::Mat window;
   while (going) {
+    size_t count{0};
     do {
       window.copyTo(prev_window);
       auto screenshot = cheat::take_screenshot();
       cv::cvtColor(screenshot(screen_pos), window, cv::COLOR_BGRA2BGR);
       if (prev_window.empty()) window.copyTo(prev_window);
+
+      count++;
+      if (count > 50) {
+        fmt::print("Resetting mouse\n");
+        reset_mouse(screen_pos.x + board_pos.x, screen_pos.y + board_pos.y);
+        count = 0;
+      }
     } while (!are_equal(prev_window(board_pos), window(board_pos)) && going);
 
     auto board = cheat::read_board(window);
