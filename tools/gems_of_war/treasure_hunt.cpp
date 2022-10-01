@@ -1,3 +1,4 @@
+#include <fmt/chrono.h>
 #include <fmt/core.h>
 
 #include <opencv2/imgcodecs.hpp>
@@ -231,13 +232,24 @@ int main() {
       }
     } while (!are_equal(prev_window(board_pos), window(board_pos)) && going);
 
+    if (!going) break;
+
     auto board = cheat::read_board(window);
-    if (number_of_empty_spaces(board) > 2) {
+    size_t empty_spaces = number_of_empty_spaces(board);
+
+    if (empty_spaces > 5) {
       fmt::print("Game finished, clicking\n");
 
       cheat::move_mouse(screen_pos.x + 920, screen_pos.y + 864);
       cheat::click_mouse();
       continue;
+    }
+
+    if (empty_spaces) {
+      std::time_t t = std::time(nullptr);
+      auto file_name =
+          fmt::format("screenshot_{:%d_%H_%M_%S}.png", fmt::localtime(t));
+      cv::imwrite(file_name, window);
     }
 
     auto matches =
