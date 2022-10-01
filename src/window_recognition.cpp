@@ -115,7 +115,8 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
   static const cv::Vec3b sack_color_2{81, 56, 64};
 
   static const cv::Vec3b brown_chest_color{0, 16, 54};
-  static const cv::Vec3b green_chest_color{69, 181, 24};
+  static const cv::Vec3b green_chest_color_1{69, 181, 24};
+  static const cv::Vec3b green_chest_color_2{61, 172, 24};
   static const cv::Vec3b red_chest_color{13, 0, 69};
 
   static const cv::Vec3b vault_color{23, 51, 65};
@@ -149,7 +150,8 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
         type = T::Sack;
       } else if (close_pixel(chest_pixel, brown_chest_color)) {
         type = T::BrownChest;
-      } else if (close_pixel(green_chest_pixel, green_chest_color)) {
+      } else if (close_pixel(green_chest_pixel, green_chest_color_1) ||
+                 close_pixel(green_chest_pixel, green_chest_color_2)) {
         type = T::GreenChest;
       } else if (close_pixel(chest_pixel, red_chest_color)) {
         type = T::RedChest;
@@ -158,13 +160,13 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
                              vault_color)) {
         type = T::Vault;
       } else {
-        fmt::print(
-            "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{} sack "
-            "{}:{}:{} green chest {}:{}:{}\n",
-            r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2], chest_pixel[0],
-            chest_pixel[1], chest_pixel[2], sack_pixel[0], sack_pixel[1],
-            sack_pixel[2], green_chest_pixel[0], green_chest_pixel[1],
-            green_chest_pixel[2]);
+        // fmt::print(
+        //     "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{}"
+        //     "sack {}:{}:{} green chest {}:{}:{}\n",
+        //     r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2],
+        //     chest_pixel[0], chest_pixel[1], chest_pixel[2], sack_pixel[0],
+        //     sack_pixel[1], sack_pixel[2], green_chest_pixel[0],
+        //     green_chest_pixel[1], green_chest_pixel[2]);
         // throw std::runtime_error("Unrecognized pixel");
       }
 

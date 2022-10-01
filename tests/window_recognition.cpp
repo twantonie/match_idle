@@ -9,10 +9,10 @@ using Type = mi::Piece::Type;
 using Board = mi::Board;
 
 constexpr std::array file_names{
-    "treasure_hunt_1.png",  "treasure_hunt_2.png", "treasure_hunt_3.png",
-    "treasure_hunt_4.png",  "treasure_hunt_5.png", "treasure_hunt_6.png",
-    "treasure_hunt_7.png",  "treasure_hunt_8.png", "treasure_hunt_9.png",
-    "treasure_hunt_10.png", "treasure_hunt_11.png"};
+    "treasure_hunt_1.png",  "treasure_hunt_2.png",  "treasure_hunt_3.png",
+    "treasure_hunt_4.png",  "treasure_hunt_5.png",  "treasure_hunt_6.png",
+    "treasure_hunt_7.png",  "treasure_hunt_8.png",  "treasure_hunt_9.png",
+    "treasure_hunt_10.png", "treasure_hunt_11.png", "treasure_hunt_12.png"};
 
 // clang-format off
 std::array<std::vector<mi::Piece>, file_names.size()> boards{
@@ -115,6 +115,26 @@ Board{
   {Type::Silver}, {Type::Sack}, {Type::RedChest}, {Type::BrownChest}, {Type::BrownChest}, {Type::RedChest}, {Type::Silver}, {Type::Gold},
   {Type::Copper}, {Type::GreenChest}, {Type::Sack}, {Type::GreenChest}, {Type::Silver}, {Type::Sack}, {Type::Sack}, {Type::Copper},
   {Type::Copper}, {Type::Silver}, {Type::Silver}, {Type::Gold}, {Type::Sack}, {Type::Silver}, {Type::GreenChest}, {Type::Gold},
+},
+Board{
+  {Type::Copper}, {Type::Copper}, {Type::Gold}, {Type::Gold}, {Type::Silver}, {Type::Sack}, {Type::Silver}, {Type::Silver}, 
+  {Type::Copper}, {Type::Silver}, {Type::Silver}, {Type::Copper}, {Type::Sack}, {Type::Copper}, {Type::Silver}, {Type::Copper},       
+  {Type::BrownChest}, {Type::Gold}, {Type::BrownChest}, {Type::BrownChest}, {Type::Sack}, {Type::Sack}, {Type::Gold}, {Type::Copper}, 
+  {Type::BrownChest}, {Type::GreenChest}, {Type::GreenChest}, {Type::Sack}, {Type::Copper}, {Type::Sack}, {Type::Gold}, {Type::Gold}, 
+  {Type::Gold}, {Type::Copper}, {Type::Sack}, {Type::Sack}, {Type::RedChest}, {Type::Copper}, {Type::GreenChest}, {Type::Silver},
+  {Type::Copper}, {Type::Silver}, {Type::Sack}, {Type::RedChest}, {Type::Silver}, {Type::Sack}, {Type::Silver}, {Type::Silver},
+  {Type::Sack}, {Type::GreenChest}, {Type::Silver}, {Type::Copper}, {Type::Sack}, {Type::GreenChest}, {Type::Gold}, {Type::Sack},
+  {Type::Sack}, {Type::Gold}, {Type::GreenChest}, {Type::Silver}, {Type::Copper}, {Type::Vault}, {Type::Copper}, {Type::GreenChest},
+},
+Board{
+  {Type::Silver}, {Type::Gold}, {Type::Sack}, {Type::Copper}, {Type::Sack}, {Type::Sack}, {Type::Copper}, {Type::Gold},
+  {Type::Sack}, {Type::Gold}, {Type::Copper}, {Type::Silver}, {Type::Copper}, {Type::Gold}, {Type::Copper}, {Type::Silver},
+  {Type::Copper}, {Type::Silver}, {Type::Sack}, {Type::Sack}, {Type::Copper}, {Type::Copper}, {Type::BrownChest}, {Type::Sack},
+  {Type::Silver}, {Type::Sack}, {Type::Silver}, {Type::BrownChest}, {Type::Gold}, {Type::Sack}, {Type::Silver}, {Type::Copper},
+  {Type::BrownChest}, {Type::Gold}, {Type::Sack}, {Type::Silver}, {Type::Copper}, {Type::BrownChest}, {Type::BrownChest}, {Type::Sack},
+  {Type::Gold}, {Type::Copper}, {Type::Gold}, {Type::Sack}, {Type::Sack}, {Type::BrownChest}, {Type::GreenChest}, {Type::Copper},
+  {Type::BrownChest}, {Type::Copper}, {Type::Silver}, {Type::GreenChest}, {Type::Sack}, {Type::Silver}, {Type::Gold}, {Type::BrownChest},
+  {Type::Silver}, {Type::RedChest}, {Type::GreenChest}, {Type::BrownChest}, {Type::RedChest}, {Type::Copper}, {Type::Copper}, {Type::Sack},
 },
 };
 // clang-format on
