@@ -198,6 +198,9 @@ static size_t number_of_empty_spaces(const mi::Board &board) {
 static void reset_mouse(int x, int y) {
   cheat::move_mouse(x + 45, y + 45);
   cheat::click_mouse();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds{50});
+
   cheat::move_mouse(0, 0);
 }
 
