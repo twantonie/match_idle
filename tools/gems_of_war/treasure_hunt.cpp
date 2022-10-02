@@ -196,12 +196,8 @@ static size_t number_of_empty_spaces(const mi::Board &board) {
 }
 
 static void reset_mouse(int x, int y) {
-  for (size_t i = 0; i < 2; i++) {
-    cheat::move_mouse(x + 45, y + 45);
-    cheat::click_mouse();
-    std::this_thread::sleep_for(std::chrono::milliseconds{500});
-  }
-
+  cheat::move_mouse(x + 45, y + 45);
+  cheat::click_mouse();
   cheat::move_mouse(0, 0);
 }
 
@@ -225,7 +221,7 @@ int main() {
       if (prev_window.empty()) window.copyTo(prev_window);
 
       count++;
-      if (count > 50) {
+      if (count > 20) {
         fmt::print("Resetting mouse\n");
         reset_mouse(screen_pos.x + board_pos.x, screen_pos.y + board_pos.y);
         count = 0;
