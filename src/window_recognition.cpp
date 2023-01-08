@@ -113,6 +113,7 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
 
   static const cv::Vec3b sack_color_1{75, 53, 59};
   static const cv::Vec3b sack_color_2{81, 56, 64};
+  static const cv::Vec3b sack_color_3{71, 49, 51};
 
   static const cv::Vec3b brown_chest_color{0, 16, 54};
   static const cv::Vec3b green_chest_color_1{69, 181, 24};
@@ -146,7 +147,8 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
       } else if (close_pixel(coin_pixel, gold_color)) {
         type = T::Gold;
       } else if (close_pixel(sack_pixel, sack_color_1) ||
-                 close_pixel(sack_pixel, sack_color_2)) {
+                 close_pixel(sack_pixel, sack_color_2) ||
+                 close_pixel(sack_pixel, sack_color_3)) {
         type = T::Sack;
       } else if (close_pixel(chest_pixel, brown_chest_color)) {
         type = T::BrownChest;
@@ -160,14 +162,17 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
                              vault_color)) {
         type = T::Vault;
       } else {
-        // fmt::print(
-        //     "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{}"
-        //     "sack {}:{}:{} green chest {}:{}:{}\n",
-        //     r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2],
-        //     chest_pixel[0], chest_pixel[1], chest_pixel[2], sack_pixel[0],
-        //     sack_pixel[1], sack_pixel[2], green_chest_pixel[0],
-        //     green_chest_pixel[1], green_chest_pixel[2]);
-        // throw std::runtime_error("Unrecognized pixel");
+        static constexpr bool print_pixel = false;
+        if (print_pixel) {
+          fmt::print(
+              "Unrecognized pixel: r {} c {} coin {}:{}:{} chest {}:{}:{}"
+              "sack {}:{}:{} green chest {}:{}:{}\n",
+              r, c, coin_pixel[0], coin_pixel[1], coin_pixel[2], chest_pixel[0],
+              chest_pixel[1], chest_pixel[2], sack_pixel[0], sack_pixel[1],
+              sack_pixel[2], green_chest_pixel[0], green_chest_pixel[1],
+              green_chest_pixel[2]);
+          throw std::runtime_error("Unrecognized pixel");
+        }
       }
 
       board[r * board_rows + c] = mi::Piece(type);

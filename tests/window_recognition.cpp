@@ -14,7 +14,7 @@ constexpr std::array file_names{
     "treasure_hunt_4.png",  "treasure_hunt_5.png",  "treasure_hunt_6.png",
     "treasure_hunt_7.png",  "treasure_hunt_8.png",  "treasure_hunt_9.png",
     "treasure_hunt_10.png", "treasure_hunt_11.png", "treasure_hunt_12.png",
-    "treasure_hunt_13.png"};
+    "treasure_hunt_13.png", "treasure_hunt_14.png"};
 
 // clang-format off
 std::array<std::vector<mi::Piece>, file_names.size()> boards{
@@ -147,6 +147,16 @@ Board{
   {Type::BrownChest}, {Type::RedChest}, {Type::Silver}, {Type::GreenChest}, {Type::RedChest}, {Type::Silver}, {Type::Silver}, {Type::Copper},
   {Type::Gold}, {Type::Silver}, {Type::Copper}, {Type::Vault}, {Type::BrownChest}, {Type::GreenChest}, {Type::Sack}, {Type::GreenChest},
   {Type::GreenChest}, {Type::Gold}, {Type::Sack}, {Type::GreenChest}, {Type::Vault}, {Type::Gold}, {Type::Gold}, {Type::GreenChest},
+},
+Board{
+  {Type::Silver}, {Type::Sack}, {Type::Silver}, {Type::Copper}, {Type::Silver}, {Type::Gold}, {Type::Sack}, {Type::Gold},
+  {Type::Gold}, {Type::Gold}, {Type::BrownChest}, {Type::Copper}, {Type::Copper}, {Type::Gold}, {Type::BrownChest}, {Type::Sack},
+  {Type::BrownChest}, {Type::Copper}, {Type::BrownChest}, {Type::Gold}, {Type::Silver}, {Type::Sack}, {Type::GreenChest}, {Type::Copper}, 
+  {Type::Silver}, {Type::Silver}, {Type::GreenChest}, {Type::GreenChest}, {Type::Copper}, {Type::Copper}, {Type::Gold}, {Type::Silver},   
+  {Type::Sack}, {Type::Copper}, {Type::Copper}, {Type::GreenChest}, {Type::Sack}, {Type::BrownChest}, {Type::GreenChest}, {Type::Copper}, 
+  {Type::Gold}, {Type::Gold}, {Type::Sack}, {Type::BrownChest}, {Type::Silver}, {Type::Copper}, {Type::BrownChest}, {Type::Gold},
+  {Type::Sack}, {Type::BrownChest}, {Type::BrownChest}, {Type::Vault}, {Type::Vault}, {Type::GreenChest}, {Type::RedChest}, {Type::Sack}, 
+  {Type::Sack}, {Type::Copper}, {Type::Gold}, {Type::BrownChest}, {Type::Copper}, {Type::Gold}, {Type::Copper}, {Type::BrownChest},      
 },
 };
 // clang-format on
