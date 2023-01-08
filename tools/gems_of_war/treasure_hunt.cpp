@@ -244,11 +244,14 @@ int main() {
       continue;
     }
 
-    if (empty_spaces) {
-      std::time_t t = std::time(nullptr);
-      auto file_name =
-          fmt::format("screenshot_{:%d_%H_%M_%S}.png", fmt::localtime(t));
-      cv::imwrite(file_name, window);
+    static constexpr bool save_screenshot = false;
+    if constexpr (save_screenshot) {
+      if (empty_spaces) {
+        std::time_t t = std::time(nullptr);
+        auto file_name =
+            fmt::format("screenshot_{:%d_%H_%M_%S}.png", fmt::localtime(t));
+        cv::imwrite(file_name, window);
+      }
     }
 
     auto matches =
