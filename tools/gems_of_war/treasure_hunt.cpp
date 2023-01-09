@@ -224,7 +224,7 @@ int main() {
       if (prev_window.empty()) window.copyTo(prev_window);
 
       count++;
-      if (count > 20) {
+      if (count > 50) {
         fmt::print("Resetting mouse\n");
         reset_mouse(screen_pos.x + board_pos.x, screen_pos.y + board_pos.y);
         count = 0;
