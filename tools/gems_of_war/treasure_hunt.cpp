@@ -204,6 +204,13 @@ static void reset_mouse(int x, int y) {
   cheat::move_mouse(0, 0);
 }
 
+void save_screenshot(const cv::Mat &window) {
+  std::time_t t = std::time(nullptr);
+  auto file_name =
+      fmt::format("screenshot_{:%d_%H_%M_%S}.png", fmt::localtime(t));
+  cv::imwrite(file_name, window);
+}
+
 int main() {
   static constexpr char window_name_k[] = "GemsOfWar";
   static constexpr mi::GridLayout grid{8, 8};
@@ -212,6 +219,8 @@ int main() {
 
   auto screen_pos = cheat::screen_position(window_name_k);
   auto board_pos = cheat::board_position();
+
+  size_t nr_misses = 0;
 
   cv::Mat prev_window;
   cv::Mat window;
@@ -244,14 +253,9 @@ int main() {
       continue;
     }
 
-    static constexpr bool save_screenshot = false;
-    if constexpr (save_screenshot) {
-      if (empty_spaces) {
-        std::time_t t = std::time(nullptr);
-        auto file_name =
-            fmt::format("screenshot_{:%d_%H_%M_%S}.png", fmt::localtime(t));
-        cv::imwrite(file_name, window);
-      }
+    static constexpr bool save_screenshot_on_empty_space = false;
+    if constexpr (save_screenshot_on_empty_space) {
+      if (empty_spaces) save_screenshot(window);
     }
 
     auto matches =
@@ -267,7 +271,16 @@ int main() {
 
     if (best_match) {
       cheat::move_piece(best_match->move_dir, best_match->pos, screen_pos);
-      best_match.reset();
+      nr_misses = 0;
+    } else {
+      nr_misses++;
+    }
+
+    if (nr_misses > 100) {
+      // Failed to find a match for quite awhile
+      fmt::print("Failed to find a match. Taking screenshot and exiting\n");
+      save_screenshot(window);
+      throw std::runtime_error("Failed to find match");
     }
   }
 
