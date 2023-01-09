@@ -117,7 +117,7 @@ std::vector<mi::Piece> read_board(cv::Mat const &board_image) {
 
   static const cv::Vec3b brown_chest_color{0, 16, 54};
   static const cv::Vec3b green_chest_color_1{69, 181, 24};
-  static const cv::Vec3b green_chest_color_2{61, 170, 21};
+  static const cv::Vec3b green_chest_color_2{61, 169, 21};
   static const cv::Vec3b red_chest_color{13, 0, 69};
 
   static const cv::Vec3b vault_color{23, 51, 65};

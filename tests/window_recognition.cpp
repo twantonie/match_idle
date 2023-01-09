@@ -14,7 +14,7 @@ constexpr std::array file_names{
     "treasure_hunt_4.png",  "treasure_hunt_5.png",  "treasure_hunt_6.png",
     "treasure_hunt_7.png",  "treasure_hunt_8.png",  "treasure_hunt_9.png",
     "treasure_hunt_10.png", "treasure_hunt_11.png", "treasure_hunt_12.png",
-    "treasure_hunt_13.png", "treasure_hunt_14.png"};
+    "treasure_hunt_13.png", "treasure_hunt_14.png", "treasure_hunt_15.png"};
 
 // clang-format off
 std::array<std::vector<mi::Piece>, file_names.size()> boards{
@@ -157,6 +157,16 @@ Board{
   {Type::Gold}, {Type::Gold}, {Type::Sack}, {Type::BrownChest}, {Type::Silver}, {Type::Copper}, {Type::BrownChest}, {Type::Gold},
   {Type::Sack}, {Type::BrownChest}, {Type::BrownChest}, {Type::Vault}, {Type::Vault}, {Type::GreenChest}, {Type::RedChest}, {Type::Sack}, 
   {Type::Sack}, {Type::Copper}, {Type::Gold}, {Type::BrownChest}, {Type::Copper}, {Type::Gold}, {Type::Copper}, {Type::BrownChest},      
+},
+Board{
+  {Type::Copper}, {Type::Copper}, {Type::Gold}, {Type::BrownChest}, {Type::Sack}, {Type::Silver}, {Type::Gold}, {Type::Copper},
+  {Type::Copper}, {Type::Silver}, {Type::Sack}, {Type::BrownChest}, {Type::Gold}, {Type::Silver}, {Type::Gold}, {Type::Silver},
+  {Type::Sack}, {Type::Silver}, {Type::Copper}, {Type::Gold}, {Type::Gold}, {Type::Copper}, {Type::Sack}, {Type::Sack},
+  {Type::Gold}, {Type::BrownChest}, {Type::Copper}, {Type::Silver}, {Type::GreenChest}, {Type::BrownChest}, {Type::GreenChest}, {Type::Silver},
+  {Type::Silver}, {Type::BrownChest}, {Type::GreenChest}, {Type::RedChest}, {Type::BrownChest}, {Type::Silver}, {Type::Copper}, {Type::Sack},
+  {Type::RedChest}, {Type::GreenChest}, {Type::Gold}, {Type::RedChest}, {Type::RedChest}, {Type::Vault}, {Type::Silver}, {Type::Silver},
+  {Type::Gold}, {Type::Copper}, {Type::Gold}, {Type::Copper}, {Type::Silver}, {Type::BrownChest}, {Type::GreenChest}, {Type::Copper},
+  {Type::GreenChest}, {Type::Silver}, {Type::BrownChest}, {Type::Sack}, {Type::BrownChest}, {Type::GreenChest}, {Type::Copper}, {Type::GreenChest},
 },
 };
 // clang-format on
